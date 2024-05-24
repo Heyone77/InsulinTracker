@@ -1,6 +1,9 @@
 package com.example.insulintracker
 
 import AboutScreen
+import RecountCarbsCountScreen
+import ScreenInfoDialog
+import ThreeDaysInsulinScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -28,8 +31,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.insulintracker.screens.CarbsCountScreen
-import com.example.insulintracker.screens.RecountCarbsCountScreen
-import com.example.insulintracker.screens.ThreeDaysInsulinScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,17 +78,17 @@ fun MainScreen() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "carbsCountScreen",
+                    startDestination = "recountCarbsCountScreen",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("carbsCountScreen") {
                         currentScreen.value = screenTitleMap["carbsCountScreen"] ?: "Расчёт УК"
-                        CarbsCountScreen(scope, drawerState)
+                        CarbsCountScreen()
                     }
                     composable("recountCarbsCountScreen") {
                         currentScreen.value =
                             screenTitleMap["recountCarbsCountScreen"] ?: "Перерасчет УК"
-                        RecountCarbsCountScreen(scope, drawerState)
+                        RecountCarbsCountScreen()
                     }
                     composable("threeDaysInsulin") {
                         currentScreen.value =
@@ -111,3 +112,5 @@ fun MainScreen() {
 
     )
 }
+
+

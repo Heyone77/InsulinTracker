@@ -1,5 +1,6 @@
 package com.example.insulintracker.ui.theme
 
+import MyTypography
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -64,7 +65,7 @@ fun InsulinTrackerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = MyTypography,
         content = content
     )
 }

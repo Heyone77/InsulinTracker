@@ -1,5 +1,5 @@
+package com.example.insulintracker.screens
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.insulintracker.SharedViewModel
 
 @Composable
-fun ThreeDaysInsulinScreen() {
+fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
     var input by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<String?>(null) }
 
@@ -32,7 +32,8 @@ fun ThreeDaysInsulinScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = input,
@@ -41,7 +42,7 @@ fun ThreeDaysInsulinScreen() {
                     input = it
                 }
             },
-            label = { Text("Введите что то там") },
+            label = { Text("Введите значение ФЧИ") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -53,7 +54,7 @@ fun ThreeDaysInsulinScreen() {
                 val number = input.toDoubleOrNull()
                 result = number?.let { calculateResult(it) } ?: "Неправильный ввод"
             },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.End).fillMaxWidth()
         ) {
             Text("Вычислить")
         }
@@ -64,11 +65,23 @@ fun ThreeDaysInsulinScreen() {
                 fontSize = 20.sp
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                val number = result?.toDoubleOrNull()
+                if (number != null) {
+                    sharedViewModel.fchiValue.value = number
+                }
+            },
+            modifier = Modifier.align(Alignment.End).fillMaxWidth()
+        ) {
+            Text("Экспорт ФЧИ")
+        }
     }
 }
 
 fun calculateResult(value: Double): String {
     val result = 100 / (value / 3)
-    val decimalFormat = DecimalFormat("#")
+    val decimalFormat = java.text.DecimalFormat("#")
     return decimalFormat.format(result)
 }

@@ -3,7 +3,6 @@ package com.example.insulintracker
 import AboutScreen
 import RecountCarbsCountScreen
 import ScreenInfoDialog
-import ThreeDaysInsulinScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -31,11 +30,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.insulintracker.screens.CarbsCountScreen
+import com.example.insulintracker.screens.ThreeDaysInsulinScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(sharedViewModel: SharedViewModel) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -83,7 +83,7 @@ fun MainScreen() {
                 ) {
                     composable("carbsCountScreen") {
                         currentScreen.value = screenTitleMap["carbsCountScreen"] ?: "Расчёт УК"
-                        CarbsCountScreen()
+                        CarbsCountScreen(sharedViewModel = sharedViewModel)
                     }
                     composable("recountCarbsCountScreen") {
                         currentScreen.value =
@@ -93,7 +93,7 @@ fun MainScreen() {
                     composable("threeDaysInsulin") {
                         currentScreen.value =
                             screenTitleMap["threeDaysInsulin"] ?: "ФЧИ"
-                        ThreeDaysInsulinScreen()
+                        ThreeDaysInsulinScreen(sharedViewModel = sharedViewModel)
                     }
                     composable("aboutScreen") {
                         currentScreen.value = screenTitleMap["aboutScreen"] ?: "О приложении"

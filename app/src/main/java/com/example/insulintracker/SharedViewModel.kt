@@ -1,4 +1,8 @@
 package com.example.insulintracker
 
-class SharedViewModel {
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+
+class SharedViewModel : ViewModel() {
+    val fchiValue: MutableLiveData<Double> = MutableLiveData()
 }

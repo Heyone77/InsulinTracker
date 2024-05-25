@@ -1,4 +1,4 @@
-package com.example.insulintracker.ui.theme
+package com.heysoft.insulintracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

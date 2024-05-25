@@ -1,4 +1,4 @@
-package com.example.insulintracker
+package com.heysoft.insulintracker
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.insulintracker.ui.theme.InsulinTrackerTheme
+import com.heysoft.insulintracker.ui.theme.InsulinTrackerTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

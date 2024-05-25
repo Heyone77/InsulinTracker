@@ -1,6 +1,5 @@
-package com.example.insulintracker
+package com.heysoft.insulintracker
 
-// DrawerContent.kt
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

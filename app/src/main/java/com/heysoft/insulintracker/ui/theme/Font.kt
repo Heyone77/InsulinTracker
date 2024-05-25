@@ -4,7 +4,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.GoogleFont.Provider
-import com.example.insulintracker.R
+import com.heysoft.insulintracker.R
 
 
 val fontProvider = Provider(

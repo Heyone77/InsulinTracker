@@ -1,4 +1,4 @@
-package com.example.insulintracker
+package com.heysoft.insulintracker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

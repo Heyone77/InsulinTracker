@@ -1,4 +1,4 @@
-package com.example.insulintracker
+package com.heysoft.insulintracker
 
 fun getInfoTextForScreen(screenName: String): String {
     return when (screenName) {

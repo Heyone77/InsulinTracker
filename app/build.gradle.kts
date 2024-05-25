@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.insulintracker"
+    namespace = "com.heysoft.insulintracker"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.insulintracker"
+        applicationId = "com.heysoft.insulintracker"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

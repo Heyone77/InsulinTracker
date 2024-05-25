@@ -22,8 +22,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.insulintracker.R
-import com.example.insulintracker.getInfoTextForScreen
+import com.heysoft.insulintracker.R
+import com.heysoft.insulintracker.getInfoTextForScreen
+
+
 
 @Composable
 fun ScreenInfoDialog(screenName: String, onDismiss: () -> Unit) {
@@ -32,7 +34,7 @@ fun ScreenInfoDialog(screenName: String, onDismiss: () -> Unit) {
         text = {
             Column(
                 modifier = Modifier
-                    .heightIn(min = 240.dp, max = 400.dp) // Увеличиваем максимальную высоту
+                    .heightIn(min = 240.dp, max = 400.dp)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

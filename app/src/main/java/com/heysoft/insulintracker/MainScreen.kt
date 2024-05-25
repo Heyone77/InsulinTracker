@@ -1,4 +1,4 @@
-package com.example.insulintracker
+package com.heysoft.insulintracker
 
 import AboutScreen
 import RecountCarbsCountScreen
@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.insulintracker.screens.CarbsCountScreen
-import com.example.insulintracker.screens.ThreeDaysInsulinScreen
+import com.heysoft.insulintracker.screens.CarbsCountScreen
+import com.heysoft.insulintracker.screens.ThreeDaysInsulinScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

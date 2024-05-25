@@ -1,4 +1,4 @@
-package com.example.insulintracker.screens
+package com.heysoft.insulintracker.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.insulintracker.SharedViewModel
+import com.heysoft.insulintracker.SharedViewModel
 
 @Composable
 fun CarbsCountScreen(sharedViewModel: SharedViewModel) {

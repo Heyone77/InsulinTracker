@@ -49,10 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.DialogProperties
 import com.heysoft.insulintracker.SharedViewModel
+import com.heysoft.insulintracker.calculateUk
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.roundToInt
 
 @Composable
 fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
@@ -340,17 +340,6 @@ fun EditableList(label: String, items: SnapshotStateList<String>) {
     }
 }
 
-fun calculateUk(
-    stSk: Double,
-    otrabotkaSk: Double,
-    fchi: Double,
-    doz: Double,
-    carbs: Double,
-    xe: Int
-): Double {
-    val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
-    return uk.roundToInt().toDouble()
-}
 
 fun getCurrentDate(): String {
     val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())

@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -48,16 +49,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.DialogProperties
+import com.heysoft.insulintracker.MealEntry
 import com.heysoft.insulintracker.SharedViewModel
 import com.heysoft.insulintracker.calculateUk
+import com.heysoft.insulintracker.dateToUnix
+import com.heysoft.insulintracker.getCurrentDate
+import com.heysoft.insulintracker.intToMealTime
+import com.heysoft.insulintracker.mealTimeToInt
+import com.heysoft.insulintracker.unixToDate
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
 fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
+    LaunchedEffect(Unit) {
+        sharedViewModel.loadMealEntries()
+    }
+
+    val mealEntries by sharedViewModel.mealEntries.observeAsState(emptyList())
+
     var showDialog by remember { mutableStateOf(false) }
-    val mealList = remember { mutableStateListOf<MealEntry>() }
 
     Scaffold(
         floatingActionButton = {
@@ -78,11 +90,15 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            LazyColumn {
-                items(mealList) { meal ->
-                    val ukText =
-                        if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
-                    Text(text = "${meal.date} -  ${meal.mealTime} - УК: $ukText", fontSize = 20.sp)
+            if (mealEntries.isEmpty()) {
+                Text("Нет данных для отображения", fontSize = 20.sp, modifier = Modifier.padding(16.dp))
+            } else {
+                LazyColumn {
+                    items(mealEntries) { meal ->
+                        val ukText =
+                            if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
+                        Text(text = "${unixToDate(meal.dateUnix)} - ${intToMealTime(meal.mealTimeInt)} - УК: $ukText", fontSize = 20.sp)
+                    }
                 }
             }
         }
@@ -90,17 +106,11 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
 
     if (showDialog) {
         MealInputDialog(onDismiss = { showDialog = false }, onSave = { meal ->
-            mealList.add(meal)
+            sharedViewModel.insertMealEntry(meal)
             showDialog = false
         }, sharedViewModel)
     }
 }
-
-data class MealEntry(
-    val date: String,
-    val mealTime: String,
-    val uk: Double
-)
 
 @Composable
 fun MealInputDialog(
@@ -184,13 +194,13 @@ fun MealInputDialog(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(onClick = {
                     if (isSaveEnabled) {
-                        val stSkValue = stSk.toDoubleOrNull() ?: 0.0
-                        val otrabotkaSkValue = otrabotkaSk.toDoubleOrNull() ?: 0.0
-                        val fchiValue = fchi.toDoubleOrNull() ?: 0.0
-                        val dozValue = dozList.sumOf { it.toDoubleOrNull() ?: 0.0 }
-                        val carbsValue = carbsList.sumOf { it.toDoubleOrNull() ?: 0.0 }
+                        val stSkValue: Double = stSk.toDoubleOrNull() ?: 0.0
+                        val otrabotkaSkValue: Double = otrabotkaSk.toDoubleOrNull() ?: 0.0
+                        val fchiValue: Double = fchi.toDoubleOrNull() ?: 0.0
+                        val dozValue: Double = dozList.sumOf { it.toDoubleOrNull() ?: 0.0 }
+                        val carbsValue: Double = carbsList.sumOf { it.toDoubleOrNull() ?: 0.0 }
 
-                        val uk = calculateUk(
+                        val uk: Double = calculateUk(
                             stSkValue,
                             otrabotkaSkValue,
                             fchiValue,
@@ -198,7 +208,14 @@ fun MealInputDialog(
                             carbsValue,
                             xe.toInt()
                         )
-                        onSave(MealEntry(selectedDate, mealTime, uk))
+
+                        val mealEntry = MealEntry(
+                            dateUnix = dateToUnix(selectedDate),
+                            mealTimeInt = mealTimeToInt(mealTime),
+                            uk = uk
+                        )
+
+                        onSave(mealEntry)
                     }
                 }, enabled = isSaveEnabled, shape = RectangleShape) {
                     Text("Сохранить")
@@ -208,12 +225,13 @@ fun MealInputDialog(
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String) -> Unit) {
-    LocalContext.current
+    val context = LocalContext.current
     val calendar = Calendar.getInstance()
-    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
 
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
@@ -340,8 +358,3 @@ fun EditableList(label: String, items: SnapshotStateList<String>) {
     }
 }
 
-
-fun getCurrentDate(): String {
-    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    return dateFormatter.format(Calendar.getInstance().time)
-}

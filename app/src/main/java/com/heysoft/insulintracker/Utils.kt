@@ -1,5 +1,9 @@
 package com.heysoft.insulintracker
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 fun getInfoTextForScreen(screenName: String): String {
@@ -28,4 +32,43 @@ fun calculateUk(
 ): Double {
     val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
     return uk.roundToInt().toDouble()
+}
+
+fun getCurrentDate(): String {
+    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    return dateFormatter.format(Calendar.getInstance().time)
+}
+
+fun dateToUnix(date: String): Long {
+    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    return dateFormatter.parse(date)?.time ?: 0L
+}
+
+fun unixToDate(unixTime: Long): String {
+    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    return dateFormatter.format(Date(unixTime))
+}
+
+fun mealTimeToInt(mealTime: String): Int {
+    return when (mealTime) {
+        "Завтрак" -> 1
+        "Второй завтрак" -> 2
+        "Обед" -> 3
+        "Полдник" -> 4
+        "Ужин" -> 5
+        "Поздний ужин" -> 6
+        else -> 0
+    }
+}
+
+fun intToMealTime(mealTimeInt: Int): String {
+    return when (mealTimeInt) {
+        1 -> "Завтрак"
+        2 -> "Второй завтрак"
+        3 -> "Обед"
+        4 -> "Полдник"
+        5 -> "Ужин"
+        6 -> "Поздний ужин"
+        else -> "Неизвестно"
+    }
 }

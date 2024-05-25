@@ -1,12 +1,15 @@
 package com.heysoft.insulintracker.screens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -20,10 +23,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
@@ -33,10 +38,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.heysoft.insulintracker.SharedViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
@@ -45,15 +52,28 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add")
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Add",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
             LazyColumn {
                 items(mealList) { meal ->
-                    Text(text = "${meal.mealTime} - УК: ${meal.uk}", fontSize = 20.sp)
+                    val ukText =
+                        if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
+                    Text(text = "${meal.mealTime} - УК: $ukText", fontSize = 20.sp)
                 }
             }
         }
@@ -89,6 +109,16 @@ fun MealInputDialog(
 
     val fchiState by sharedViewModel.fchiValue.observeAsState()
 
+    val isSaveEnabled by remember {
+        derivedStateOf {
+            stSk.isNotBlank() && otrabotkaSk.isNotBlank() && fchi.isNotBlank() &&
+                    dozList.all { it.isNotBlank() } && carbsList.all { it.isNotBlank() } &&
+                    stSk.toDoubleOrNull() != null && otrabotkaSk.toDoubleOrNull() != null &&
+                    fchi.toDoubleOrNull() != null && dozList.all { it.toDoubleOrNull() != null } &&
+                    carbsList.all { it.toDoubleOrNull() != null }
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Введите данные") },
@@ -99,10 +129,18 @@ fun MealInputDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                DropdownMenuField(label = "1 ХЕ", selectedItem = xe, items = listOf("10", "12")) { xe = it }
-                DropdownMenuField(label = "Наименование приема пищи", selectedItem = mealTime, items = listOf("Завтрак", "Обед", "Ужин")) { mealTime = it }
-                InputField("Ст ск", stSk) { stSk = it }
-                InputField("Отработка ск", otrabotkaSk) { otrabotkaSk = it }
+                DropdownMenuField(
+                    label = "1 хлебная единица (ХЕ) = ГУ",
+                    selectedItem = xe,
+                    items = listOf("10", "12")
+                ) { xe = it }
+                DropdownMenuField(
+                    label = "Наименование приема пищи",
+                    selectedItem = mealTime,
+                    items = listOf("Завтрак","Второй завтрак", "Обед","Полдник", "Ужин", "Поздний ужин")
+                ) { mealTime = it }
+                InputField("Старт СК", stSk) { stSk = it }
+                InputField("Отработка СК", otrabotkaSk) { otrabotkaSk = it }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -112,38 +150,58 @@ fun MealInputDialog(
                         fchiState?.let {
                             fchi = it.toString()
                         }
-                    }) {
+                    }, shape = RectangleShape) {
                         Text("Импорт ФЧИ")
                     }
                 }
-                EditableList(label = "Дозировка", items = dozList)
+                EditableList(label = "Кол-во инс. на еду (ед.)", items = dozList)
                 EditableList(label = "Кол-во углеводов", items = carbsList)
             }
         },
         confirmButton = {
-            Button(onClick = {
-                val stSkValue = stSk.toDoubleOrNull() ?: 0.0
-                val otrabotkaSkValue = otrabotkaSk.toDoubleOrNull() ?: 0.0
-                val fchiValue = fchi.toDoubleOrNull() ?: 0.0
-                val dozValue = dozList.sumOf { it.toDoubleOrNull() ?: 0.0 }
-                val carbsValue = carbsList.sumOf { it.toDoubleOrNull() ?: 0.0 }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = onDismiss, shape = RectangleShape) {
+                    Text("Отмена")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(onClick = {
+                    if (isSaveEnabled) {
+                        val stSkValue = stSk.toDoubleOrNull() ?: 0.0
+                        val otrabotkaSkValue = otrabotkaSk.toDoubleOrNull() ?: 0.0
+                        val fchiValue = fchi.toDoubleOrNull() ?: 0.0
+                        val dozValue = dozList.sumOf { it.toDoubleOrNull() ?: 0.0 }
+                        val carbsValue = carbsList.sumOf { it.toDoubleOrNull() ?: 0.0 }
 
-                val uk = calculateUk(stSkValue, otrabotkaSkValue, fchiValue, dozValue, carbsValue, xe.toInt())
-                onSave(MealEntry(mealTime, uk))
-            }) {
-                Text("Сохранить")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Отмена")
+                        val uk = calculateUk(
+                            stSkValue,
+                            otrabotkaSkValue,
+                            fchiValue,
+                            dozValue,
+                            carbsValue,
+                            xe.toInt()
+                        )
+                        onSave(MealEntry(mealTime, uk))
+                    }
+                }, enabled = isSaveEnabled, shape = RectangleShape) {
+                    Text("Сохранить")
+                }
             }
         }
+
     )
 }
 
 @Composable
-fun InputField(label: String, value: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit) {
+fun InputField(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit
+) {
     OutlinedTextField(
         value = value,
         onValueChange = { if (it.all { char -> char.isDigit() || char == '.' }) onValueChange(it) },
@@ -154,18 +212,26 @@ fun InputField(label: String, value: String, modifier: Modifier = Modifier, onVa
 }
 
 @Composable
-fun DropdownMenuField(label: String, selectedItem: String, items: List<String>, onItemSelected: (String) -> Unit) {
+fun DropdownMenuField(
+    label: String,
+    selectedItem: String,
+    items: List<String>,
+    onItemSelected: (String) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column {
         Text(text = label)
-        Box {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, MaterialTheme.colorScheme.primary)
+                .clickable { expanded = true }
+                .padding(8.dp)
+        ) {
             Text(
                 text = selectedItem,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable { expanded = true }
+                modifier = Modifier.fillMaxWidth()
             )
 
             DropdownMenu(
@@ -192,12 +258,24 @@ fun EditableList(label: String, items: SnapshotStateList<String>) {
         items.forEachIndexed { index, value ->
             InputField("$label ${index + 1}", value) { items[index] = it }
         }
-        Button(onClick = { items.add("") }) {
+        Button(
+            onClick = { items.add("") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RectangleShape
+        ) {
             Text("+")
         }
     }
 }
 
-fun calculateUk(stSk: Double, otrabotkaSk: Double, fchi: Double, doz: Double, carbs: Double, xe: Int): Double {
-    return ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
+fun calculateUk(
+    stSk: Double,
+    otrabotkaSk: Double,
+    fchi: Double,
+    doz: Double,
+    carbs: Double,
+    xe: Int
+): Double {
+    val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
+    return uk.roundToInt().toDouble()
 }

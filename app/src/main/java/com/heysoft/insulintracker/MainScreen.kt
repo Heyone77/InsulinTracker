@@ -2,7 +2,6 @@ package com.heysoft.insulintracker
 
 import AboutScreen
 import RecountCarbsCountScreen
-import ScreenInfoDialog
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -25,11 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heysoft.insulintracker.screens.CarbsCountScreen
+import com.heysoft.insulintracker.screens.ScreenInfoDialog
 import com.heysoft.insulintracker.screens.ThreeDaysInsulinScreen
 import kotlinx.coroutines.launch
 
@@ -52,10 +53,12 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.width(240.dp)) {
+            ModalDrawerSheet(modifier = Modifier.width(240.dp), drawerShape = RectangleShape) {
                 DrawerContent(navController, drawerState, scope) { screen ->
                     currentScreen.value = screenTitleMap[screen] ?: "Unknown"
+
                 }
+
             }
         },
         content = {
@@ -78,7 +81,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "recountCarbsCountScreen",
+                    startDestination = "carbsCountScreen",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("carbsCountScreen") {

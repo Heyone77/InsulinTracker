@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun DrawerContent(
     navController: NavHostController,
@@ -57,7 +58,7 @@ fun DrawerContent(
             }
         )
         NavigationDrawerItem(
-            label = "ФЧИ",
+            label = "Расчёт ФЧИ",
             onClick = {
                 onScreenSelected("ФЧИ")
                 navController.navigate("threeDaysInsulin") {
@@ -79,6 +80,7 @@ fun DrawerContent(
             }
         )
     }
+
 }
 
 @Composable

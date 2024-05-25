@@ -32,9 +32,14 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(text = "ФЧИ (ФАКТОР ЧУВСТВИТЕЛЬНОСТИ К ИНСУЛИНУ) ИЛИ НА СКОЛЬКО 1 ЕДИНИЦА ИНСУЛИНА СНИЖАЕТ САХАР КРОВИ\n" +
+                "Зачем нужно знать ФЧИ?\n" +
+                "1. Для расчета углеводного коэффициента\n" +
+                "2. Для коррекции высокого СК \n" +
+                "3. Для снижения дозы пищевого инсулина, если СК низкий")
         OutlinedTextField(
             value = input,
             onValueChange = {
@@ -42,7 +47,7 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
                     input = it
                 }
             },
-            label = { Text("Введите значение ФЧИ") },
+            label = { Text("Кол-во инсулина за 3 дня (на еду)") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -54,7 +59,9 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
                 val number = input.toDoubleOrNull()
                 result = number?.let { calculateResult(it) } ?: "Неправильный ввод"
             },
-            modifier = Modifier.align(Alignment.End).fillMaxWidth()
+            modifier = Modifier
+                .align(Alignment.End)
+                .fillMaxWidth()
         ) {
             Text("Вычислить")
         }
@@ -73,9 +80,11 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
                     sharedViewModel.fchiValue.value = number
                 }
             },
-            modifier = Modifier.align(Alignment.End).fillMaxWidth()
+            modifier = Modifier
+                .align(Alignment.End)
+                .fillMaxWidth()
         ) {
-            Text("Экспорт ФЧИ")
+            Text("Экспорт ФЧИ в расчёт УК")
         }
     }
 }

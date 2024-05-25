@@ -47,7 +47,7 @@ fun RecountCarbsCountScreen() {
                     stal = it
                 }
             },
-            label = { Text("Стал (сегодня)") },
+            label = { Text("УК сегодня (после приема пищи)") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -96,7 +96,7 @@ fun RecountCarbsCountScreen() {
                     sredniyUK = "Invalid input"
                 }
             },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.End).fillMaxWidth()
         ) {
             Text("Рассчитать")
         }

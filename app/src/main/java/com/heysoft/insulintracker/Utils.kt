@@ -1,5 +1,7 @@
 package com.heysoft.insulintracker
 
+import kotlin.math.roundToInt
+
 fun getInfoTextForScreen(screenName: String): String {
     return when (screenName) {
         "Расчёт УК" -> "Количество инсулина, необходимое для компенсации определенного количества углеводов. Это величина индивидуальная и отражает собственную потребность в инсулине каждого диабетика. \n" +
@@ -14,4 +16,16 @@ fun getInfoTextForScreen(screenName: String): String {
         "О приложении" -> "Это информация о приложении и его назначении."
         else -> "Информация недоступна."
     }
+}
+
+fun calculateUk(
+    stSk: Double,
+    otrabotkaSk: Double,
+    fchi: Double,
+    doz: Double,
+    carbs: Double,
+    xe: Int
+): Double {
+    val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
+    return uk.roundToInt().toDouble()
 }

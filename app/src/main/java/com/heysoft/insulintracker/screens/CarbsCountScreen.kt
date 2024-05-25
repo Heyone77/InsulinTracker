@@ -1,5 +1,6 @@
 package com.heysoft.insulintracker.screens
 
+import android.widget.DatePicker
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,10 +42,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.DialogProperties
 import com.heysoft.insulintracker.SharedViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
@@ -73,7 +82,7 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                 items(mealList) { meal ->
                     val ukText =
                         if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
-                    Text(text = "${meal.mealTime} - УК: $ukText", fontSize = 20.sp)
+                    Text(text = "${meal.date} -  ${meal.mealTime} - УК: $ukText", fontSize = 20.sp)
                 }
             }
         }
@@ -88,6 +97,7 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
 }
 
 data class MealEntry(
+    val date: String,
     val mealTime: String,
     val uk: Double
 )
@@ -103,6 +113,7 @@ fun MealInputDialog(
     var stSk by remember { mutableStateOf("") }
     var otrabotkaSk by remember { mutableStateOf("") }
     var fchi by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf(getCurrentDate()) }
 
     val dozList = remember { mutableStateListOf("") }
     val carbsList = remember { mutableStateListOf("") }
@@ -121,6 +132,8 @@ fun MealInputDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         title = { Text("Введите данные") },
         text = {
             Column(
@@ -129,6 +142,7 @@ fun MealInputDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                DatePickerField(label = "Выберите дату", selectedDate = selectedDate) { selectedDate = it }
                 DropdownMenuField(
                     label = "1 хлебная единица (ХЕ) = ГУ",
                     selectedItem = xe,
@@ -137,7 +151,7 @@ fun MealInputDialog(
                 DropdownMenuField(
                     label = "Наименование приема пищи",
                     selectedItem = mealTime,
-                    items = listOf("Завтрак","Второй завтрак", "Обед","Полдник", "Ужин", "Поздний ужин")
+                    items = listOf("Завтрак", "Второй завтрак", "Обед", "Полдник", "Ужин", "Поздний ужин")
                 ) { mealTime = it }
                 InputField("Старт СК", stSk) { stSk = it }
                 InputField("Отработка СК", otrabotkaSk) { otrabotkaSk = it }
@@ -184,15 +198,73 @@ fun MealInputDialog(
                             carbsValue,
                             xe.toInt()
                         )
-                        onSave(MealEntry(mealTime, uk))
+                        onSave(MealEntry(selectedDate, mealTime, uk))
                     }
                 }, enabled = isSaveEnabled, shape = RectangleShape) {
                     Text("Сохранить")
                 }
             }
         }
-
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String) -> Unit) {
+    LocalContext.current
+    val calendar = Calendar.getInstance()
+    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        DatePickerDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Отмена")
+                }
+            },
+            content = {
+                AndroidView(
+                    factory = { context ->
+                        DatePicker(context).apply {
+                            init(year, month, day) { _, selectedYear, selectedMonth, selectedDayOfMonth ->
+                                val selectedCalendar = Calendar.getInstance()
+                                selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth)
+                                onDateSelected(dateFormatter.format(selectedCalendar.time))
+                            }
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+    Column {
+        Text(text = label)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, MaterialTheme.colorScheme.primary)
+                .clickable { showDialog = true }
+                .padding(8.dp)
+        ) {
+            Text(
+                text = selectedDate,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
 }
 
 @Composable
@@ -278,4 +350,9 @@ fun calculateUk(
 ): Double {
     val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
     return uk.roundToInt().toDouble()
+}
+
+fun getCurrentDate(): String {
+    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return dateFormatter.format(Calendar.getInstance().time)
 }

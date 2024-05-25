@@ -1,8 +1,12 @@
 package com.heysoft.insulintracker
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
-class SharedViewModel : ViewModel() {
+class SharedViewModel(application: Application) : AndroidViewModel(application) {
+
     val fchiValue: MutableLiveData<Double> = MutableLiveData()
+
 }
+

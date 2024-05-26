@@ -47,7 +47,7 @@ fun RecountCarbsCountScreen() {
                     stal = it
                 }
             },
-            label = { Text("УК сегодня (после приема пищи)") },
+            label = { Text("УК предыдущего приема пищи (сегодня)") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -61,7 +61,7 @@ fun RecountCarbsCountScreen() {
                     byl = it
                 }
             },
-            label = { Text("Был (вчера)") },
+            label = { Text("УК предыдущего приема пищи (вчера)") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number
@@ -75,7 +75,7 @@ fun RecountCarbsCountScreen() {
                     plan = it
                 }
             },
-            label = { Text("План (сегодня)") },
+            label = { Text("УК предстоящего приема пищи") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number

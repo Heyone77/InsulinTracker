@@ -1,10 +1,10 @@
 package com.heysoft.insulintracker
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.math.roundToInt
 
 fun getInfoTextForScreen(screenName: String): String {
     return when (screenName) {
@@ -30,8 +30,55 @@ fun calculateUk(
     carbs: Double,
     xe: Int
 ): Double {
-    val uk = ((stSk - otrabotkaSk) / fchi + doz) / (carbs / xe)
-    return uk.roundToInt().toDouble()
+
+    val uk = ((otrabotkaSk - stSk) / fchi + doz) / (carbs / xe)
+    Log.i(
+        "calculateUk",
+        "stSk: $stSk, otrabotkaSk: $otrabotkaSk, fchi: $fchi, doz: $doz, carbs: $carbs, xe: $xe, uk: $uk"
+    )
+    return uk
+}
+
+//fun calculateUk(
+//    stSk: Double,
+//    otrabotkaSk: Double,
+//    fchi: Double,
+//    doz: Double,
+//    carbs: Double,
+//    xe: Int
+//): Double {
+//    // Вычисление разницы стартового и обработанного СК
+//    val skDifference = stSk - otrabotkaSk
+//    val skDifferenceRounded = String.format(Locale.US, "%.3f", skDifference).toDouble()
+//    Log.i("calculateUk", "SK Difference: $skDifferenceRounded")
+//
+//    // Вычисление деления на ФЧИ
+//    val divisionByFchi = skDifferenceRounded / fchi
+//    val divisionByFchiRounded = String.format(Locale.US, "%.3f", divisionByFchi).toDouble()
+//    Log.i("calculateUk", "Division by FCHI: $divisionByFchiRounded")
+//
+//    // Сложение дозы
+//    val additionOfDoz = divisionByFchiRounded + doz
+//    val additionOfDozRounded = String.format(Locale.US, "%.3f", additionOfDoz).toDouble()
+//    Log.i("calculateUk", "Addition of Doz: $additionOfDozRounded")
+//
+//    // Вычисление деления углеводов на ХЕ
+//    val carbsDivisionByXe = carbs / xe
+//    val carbsDivisionByXeRounded = String.format(Locale.US, "%.3f", carbsDivisionByXe).toDouble()
+//    Log.i("calculateUk", "Carbs Division by XE: $carbsDivisionByXeRounded")
+//
+//    // Окончательное вычисление УК
+//    val uk = additionOfDozRounded / carbsDivisionByXeRounded
+//    val ukRounded = String.format(Locale.US, "%.3f", uk).toDouble()
+//    Log.i("calculateUk", "Calculated UK: $ukRounded")
+//    Log.i("calculateUk", "Значения $stSk $otrabotkaSk $fchi $doz $carbs $xe")
+//
+//    return ukRounded
+//}
+
+fun String.toDoubleOrNullWithCommaSupport(): Double? {
+    val normalized = this.replace(',', '.')
+    return normalized.toDoubleOrNull()
 }
 
 fun getCurrentDate(): String {

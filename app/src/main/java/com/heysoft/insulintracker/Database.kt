@@ -18,6 +18,11 @@ data class MealEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val dateUnix: Long,
     val mealTimeInt: Int,
+    val stSk: Double,
+    val otrabotkaSk: Double,
+    val fchi: Int,
+    val doz: Double,
+    val carbs: Double,
     val uk: Double
 )
 
@@ -41,9 +46,8 @@ interface MealEntryDao {
 }
 
 
-@Database(entities = [MealEntry::class], version = 1, exportSchema = false)
+@Database(entities = [MealEntry::class], version = 2, exportSchema = false)
 abstract class MealDatabase : RoomDatabase() {
-
     abstract fun mealEntryDao(): MealEntryDao
 
     companion object {
@@ -56,7 +60,9 @@ abstract class MealDatabase : RoomDatabase() {
                     context.applicationContext,
                     MealDatabase::class.java,
                     "meal_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Добавим это, чтобы база данных пересоздавалась при изменении схемы
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -1,5 +1,6 @@
 package com.heysoft.insulintracker.screens
 
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,6 +57,7 @@ import com.heysoft.insulintracker.dateToUnix
 import com.heysoft.insulintracker.getCurrentDate
 import com.heysoft.insulintracker.intToMealTime
 import com.heysoft.insulintracker.mealTimeToInt
+import com.heysoft.insulintracker.toDoubleOrNullWithCommaSupport
 import com.heysoft.insulintracker.unixToDate
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -99,8 +101,8 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
             } else {
                 LazyColumn {
                     items(mealEntries) { meal ->
-                        val ukText =
-                            if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
+                        val ukText = String.format(Locale.US, "%.2f", meal.uk)
+                        Log.i("CarbsCountScreen", "Displaying meal entry: ${meal.dateUnix}, ${meal.mealTimeInt}, UK: ${meal.uk}")
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -161,28 +163,24 @@ fun MealInputDialog(
     mealEntryToEdit: MealEntry? = null,
     sharedViewModel: SharedViewModel
 ) {
-    var xe by remember { mutableStateOf("10") }  // Set default value for XE
+    var xe by remember { mutableStateOf("10") }
     var mealTime by remember { mutableStateOf(mealEntryToEdit?.mealTimeInt?.let { intToMealTime(it) } ?: "Завтрак") }
-    var stSk by remember { mutableStateOf("") }
-    var otrabotkaSk by remember { mutableStateOf("") }
-    var fchi by remember { mutableStateOf("") }
+    var stSk by remember { mutableStateOf(mealEntryToEdit?.stSk?.toString() ?: "") }
+    var otrabotkaSk by remember { mutableStateOf(mealEntryToEdit?.otrabotkaSk?.toString() ?: "") }
+    var fchi by remember { mutableStateOf(mealEntryToEdit?.fchi?.toString() ?: "") }
     var selectedDate by remember { mutableStateOf(mealEntryToEdit?.dateUnix?.let { unixToDate(it) } ?: getCurrentDate()) }
 
-    // Only use mealEntryToEdit?.uk for display purposes, not to initialize XE
-    val initialUk = mealEntryToEdit?.uk?.toString() ?: ""
-
-    val dozList = remember { mutableStateListOf("") }
-    val carbsList = remember { mutableStateListOf("") }
-
+    val dozList = remember { mutableStateListOf(mealEntryToEdit?.doz?.toString() ?: "") }
+    val carbsList = remember { mutableStateListOf(mealEntryToEdit?.carbs?.toString() ?: "") }
     val fchiState by sharedViewModel.fchiValue.observeAsState()
 
     val isSaveEnabled by remember {
         derivedStateOf {
             stSk.isNotBlank() && otrabotkaSk.isNotBlank() && fchi.isNotBlank() &&
                     dozList.all { it.isNotBlank() } && carbsList.all { it.isNotBlank() } &&
-                    stSk.toDoubleOrNull() != null && otrabotkaSk.toDoubleOrNull() != null &&
-                    fchi.toDoubleOrNull() != null && dozList.all { it.toDoubleOrNull() != null } &&
-                    carbsList.all { it.toDoubleOrNull() != null }
+                    stSk.toDoubleOrNullWithCommaSupport() != null && otrabotkaSk.toDoubleOrNullWithCommaSupport() != null &&
+                    fchi.toIntOrNull() != null && dozList.all { it.toDoubleOrNullWithCommaSupport() != null } &&
+                    carbsList.all { it.toDoubleOrNullWithCommaSupport() != null }
         }
     }
 
@@ -240,28 +238,42 @@ fun MealInputDialog(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(onClick = {
                     if (isSaveEnabled) {
-                        val stSkValue: Double = stSk.toDoubleOrNull() ?: 0.0
-                        val otrabotkaSkValue: Double = otrabotkaSk.toDoubleOrNull() ?: 0.0
-                        val fchiValue: Double = fchi.toDoubleOrNull() ?: 0.0
-                        val dozValue: Double = dozList.sumOf { it.toDoubleOrNull() ?: 0.0 }
-                        val carbsValue: Double = carbsList.sumOf { it.toDoubleOrNull() ?: 0.0 }
+                        val stSkValue = stSk.toDoubleOrNullWithCommaSupport() ?: 0.0
+                        val otrabotkaSkValue = otrabotkaSk.toDoubleOrNullWithCommaSupport() ?: 0.0
+                        val fchiValue = fchi.toIntOrNull() ?: 0
+                        val dozValue = dozList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
+                        val carbsValue = carbsList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
 
-                        val uk: Double = calculateUk(
+                        Log.i("MealInputDialog", "stSk: $stSkValue, otrabotkaSk: $otrabotkaSkValue, fchi: $fchiValue, doz: $dozValue, carbs: $carbsValue, xe: $xe")
+
+                        val uk = calculateUk(
                             stSkValue,
                             otrabotkaSkValue,
-                            fchiValue,
+                            fchiValue.toDouble(),
                             dozValue,
                             carbsValue,
                             xe.toInt()
                         )
 
+                        Log.i("MealInputDialog", "Calculated UK: $uk")
+
                         val updatedMealEntry = mealEntryToEdit?.copy(
                             dateUnix = dateToUnix(selectedDate),
                             mealTimeInt = mealTimeToInt(mealTime),
+                            stSk = stSkValue,
+                            otrabotkaSk = otrabotkaSkValue,
+                            fchi = fchiValue,
+                            doz = dozValue,
+                            carbs = carbsValue,
                             uk = uk
                         ) ?: MealEntry(
                             dateUnix = dateToUnix(selectedDate),
                             mealTimeInt = mealTimeToInt(mealTime),
+                            stSk = stSkValue,
+                            otrabotkaSk = otrabotkaSkValue,
+                            fchi = fchiValue,
+                            doz = dozValue,
+                            carbs = carbsValue,
                             uk = uk
                         )
 
@@ -278,7 +290,6 @@ fun MealInputDialog(
         }
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -386,7 +397,10 @@ fun InputField(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = { if (it.all { char -> char.isDigit() || char == '.' }) onValueChange(it) },
+        onValueChange = {
+            if (it.all { char -> char.isDigit() || char == '.' || char == ',' })
+                onValueChange(it)
+        },
         label = { Text(label) },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         modifier = modifier.fillMaxWidth()

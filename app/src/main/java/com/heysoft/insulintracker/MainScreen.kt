@@ -5,7 +5,7 @@ import RecountCarbsCountScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,7 +73,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
                         },
                         actions = {
                             IconButton(onClick = { showInfoDialog = true }) {
-                                Icon(Icons.Filled.Info, contentDescription = "Info")
+                                Icon(Icons.AutoMirrored.Outlined.Help, contentDescription = "Info")
                             }
                         }
                     )

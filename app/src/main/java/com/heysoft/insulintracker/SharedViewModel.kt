@@ -1,59 +1,48 @@
 package com.heysoft.insulintracker
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mealEntryDao = MealDatabase.getDatabase(application).mealEntryDao()
-
     val fchiValue: MutableLiveData<Double> = MutableLiveData()
+    val mealEntries: MutableLiveData<List<MealEntry>> = MutableLiveData()
 
-    private val _mealEntries = MutableLiveData<List<MealEntry>>()
-    val mealEntries: LiveData<List<MealEntry>> get() = _mealEntries
+    private val mealEntryDao: MealEntryDao = MealDatabase.getDatabase(application).mealEntryDao()
 
-    init {
-        loadMealEntries()
+    fun loadMealEntries() {
+        viewModelScope.launch {
+            mealEntries.value = mealEntryDao.getAllMealEntries()
+            Log.i("SharedViewModel", "Loaded meal entries: ${mealEntries.value}")
+        }
     }
 
     fun insertMealEntry(mealEntry: MealEntry) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             mealEntryDao.insertMealEntry(mealEntry)
+            Log.i("SharedViewModel", "Inserted meal entry: $mealEntry")
             loadMealEntries()
         }
     }
 
     fun updateMealEntry(mealEntry: MealEntry) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             mealEntryDao.updateMealEntry(mealEntry)
+            Log.i("SharedViewModel", "Updated meal entry: $mealEntry")
             loadMealEntries()
         }
     }
 
     fun deleteMealEntry(mealEntry: MealEntry) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             mealEntryDao.deleteMealEntry(mealEntry)
+            Log.i("SharedViewModel", "Deleted meal entry: $mealEntry")
             loadMealEntries()
         }
     }
-
-    fun loadMealEntries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _mealEntries.postValue(mealEntryDao.getAllMealEntries())
-        }
-    }
-
-    fun deleteAllMealEntries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            mealEntryDao.deleteAllMealEntries()
-            loadMealEntries()
-        }
-    }
-
 }
 

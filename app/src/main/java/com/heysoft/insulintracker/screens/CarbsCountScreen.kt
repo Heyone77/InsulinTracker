@@ -69,12 +69,16 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
 
     val mealEntries by sharedViewModel.mealEntries.observeAsState(emptyList())
     var showDialog by remember { mutableStateOf(false) }
+    var showEditDeleteDialog by remember { mutableStateOf(false) }
     var selectedMealEntry by remember { mutableStateOf<MealEntry?>(null) }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = {
+                    selectedMealEntry = null
+                    showDialog = true
+                },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
@@ -102,7 +106,7 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                                 .fillMaxWidth()
                                 .clickable {
                                     selectedMealEntry = meal
-                                    showDialog = true
+                                    showEditDeleteDialog = true
                                 }
                                 .padding(8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -116,27 +120,34 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
     }
 
     if (showDialog) {
+        MealInputDialog(
+            onDismiss = { showDialog = false },
+            onSave = { meal ->
+                sharedViewModel.insertMealEntry(meal)
+                showDialog = false
+            },
+            onUpdate = { meal ->
+                sharedViewModel.updateMealEntry(meal)
+                showDialog = false
+            },
+            mealEntryToEdit = selectedMealEntry,
+            sharedViewModel = sharedViewModel
+        )
+    }
+
+    if (showEditDeleteDialog) {
         selectedMealEntry?.let { mealEntry ->
             EditDeleteMealDialog(
                 mealEntry = mealEntry,
-                onDismiss = { showDialog = false },
+                onDismiss = { showEditDeleteDialog = false },
                 onDelete = {
                     sharedViewModel.deleteMealEntry(mealEntry)
-                    showDialog = false
+                    showEditDeleteDialog = false
                 },
                 onEdit = {
-                    sharedViewModel.updateMealEntry(it)
-                    showDialog = false
+                    showEditDeleteDialog = false
+                    showDialog = true
                 }
-            )
-        } ?: run {
-            MealInputDialog(
-                onDismiss = { showDialog = false },
-                onSave = { meal ->
-                    sharedViewModel.insertMealEntry(meal)
-                    showDialog = false
-                },
-                sharedViewModel = sharedViewModel
             )
         }
     }
@@ -146,14 +157,19 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
 fun MealInputDialog(
     onDismiss: () -> Unit,
     onSave: (MealEntry) -> Unit,
+    onUpdate: ((MealEntry) -> Unit)? = null,
+    mealEntryToEdit: MealEntry? = null,
     sharedViewModel: SharedViewModel
 ) {
-    var xe by remember { mutableStateOf("10") }
-    var mealTime by remember { mutableStateOf("Завтрак") }
+    var xe by remember { mutableStateOf("10") }  // Set default value for XE
+    var mealTime by remember { mutableStateOf(mealEntryToEdit?.mealTimeInt?.let { intToMealTime(it) } ?: "Завтрак") }
     var stSk by remember { mutableStateOf("") }
     var otrabotkaSk by remember { mutableStateOf("") }
     var fchi by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf(getCurrentDate()) }
+    var selectedDate by remember { mutableStateOf(mealEntryToEdit?.dateUnix?.let { unixToDate(it) } ?: getCurrentDate()) }
+
+    // Only use mealEntryToEdit?.uk for display purposes, not to initialize XE
+    val initialUk = mealEntryToEdit?.uk?.toString() ?: ""
 
     val dozList = remember { mutableStateListOf("") }
     val carbsList = remember { mutableStateListOf("") }
@@ -174,7 +190,7 @@ fun MealInputDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.fillMaxWidth().padding(16.dp),
-        title = { Text("Введите данные") },
+        title = { Text(if (mealEntryToEdit == null) "Введите данные" else "Редактировать данные") },
         text = {
             Column(
                 modifier = Modifier
@@ -239,13 +255,21 @@ fun MealInputDialog(
                             xe.toInt()
                         )
 
-                        val mealEntry = MealEntry(
+                        val updatedMealEntry = mealEntryToEdit?.copy(
+                            dateUnix = dateToUnix(selectedDate),
+                            mealTimeInt = mealTimeToInt(mealTime),
+                            uk = uk
+                        ) ?: MealEntry(
                             dateUnix = dateToUnix(selectedDate),
                             mealTimeInt = mealTimeToInt(mealTime),
                             uk = uk
                         )
 
-                        onSave(mealEntry)
+                        if (mealEntryToEdit == null) {
+                            onSave(updatedMealEntry)
+                        } else {
+                            onUpdate?.invoke(updatedMealEntry)
+                        }
                     }
                 }, enabled = isSaveEnabled, shape = RectangleShape) {
                     Text("Сохранить")
@@ -320,7 +344,7 @@ fun EditDeleteMealDialog(
     mealEntry: MealEntry,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
-    onEdit: (MealEntry) -> Unit
+    onEdit: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -336,17 +360,11 @@ fun EditDeleteMealDialog(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Button(onClick = {
-                    // Логика редактирования
-                    onEdit(mealEntry)
-                }) {
+                Button(onClick = onEdit) {
                     Text("Редактировать")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Button(onClick = {
-                    // Логика удаления
-                    onDelete()
-                }) {
+                Button(onClick = onDelete) {
                     Text("Удалить")
                 }
             }

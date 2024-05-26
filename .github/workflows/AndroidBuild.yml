@@ -2,10 +2,7 @@ name: AndroidBuild
 on:
   pull_request:
     branches:
-      - master
-  push:
-    branches:
-      - master
+      - feature
 jobs:
   build:
     runs-on:

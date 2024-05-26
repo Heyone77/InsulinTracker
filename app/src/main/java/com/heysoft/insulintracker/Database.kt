@@ -20,7 +20,7 @@ data class MealEntry(
     val mealTimeInt: Int,
     val stSk: Double,
     val otrabotkaSk: Double,
-    val fchi: Int,
+    val fchi: Double,
     val doz: Double,
     val carbs: Double,
     val uk: Double
@@ -46,7 +46,7 @@ interface MealEntryDao {
 }
 
 
-@Database(entities = [MealEntry::class], version = 2, exportSchema = false)
+@Database(entities = [MealEntry::class], version = 3, exportSchema = false)
 abstract class MealDatabase : RoomDatabase() {
     abstract fun mealEntryDao(): MealEntryDao
 

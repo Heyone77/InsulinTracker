@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.3
         with:
           name: insulinTracker.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
 
       - name: Create GitHub Release
         id: create_release
@@ -42,12 +42,15 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Create Environment File for Upload URL
+        run: echo "UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_ENV
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/debug/app-debug.apk
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: app/build/outputs/apk/release/app-release.apk
           asset_name: insulinTracker.apk
           asset_content_type: application/vnd.android.package-archive

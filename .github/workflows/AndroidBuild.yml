@@ -1,13 +1,11 @@
 name: AndroidBuild
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - feature
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

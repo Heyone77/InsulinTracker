@@ -35,8 +35,8 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: insulinTracker.apk
-          path: app/build/outputs/apk/release/app-release.apk
+          name: DiaHelper.apk
+          path: app/release/app-release.apk
 
       - name: Create GitHub Release
         id: create_release
@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          release_name: Release
           draft: false
           prerelease: false
 
@@ -58,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: app/build/outputs/apk/release/app-release.apk
-          asset_name: insulinTracker.apk
+          asset_path: app/release/app-release.apk
+          asset_name: DiaHelper.apk
           asset_content_type: application/vnd.android.package-archive

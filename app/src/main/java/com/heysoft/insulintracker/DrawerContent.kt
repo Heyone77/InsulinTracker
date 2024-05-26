@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
@@ -84,6 +85,19 @@ fun DrawerContent(
             onClick = {
                 onScreenSelected("О приложении")
                 navController.navigate("aboutScreen") {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
+                }
+                scope.launch { drawerState.close() }
+            }
+        )
+
+        NavigationDrawerItem(
+            label = "Настройки",
+            icon = Icons.Default.Settings,  // Поменяйте на соответствующую иконку
+            onClick = {
+                onScreenSelected("Настройки")
+                navController.navigate("settingsScreen") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }

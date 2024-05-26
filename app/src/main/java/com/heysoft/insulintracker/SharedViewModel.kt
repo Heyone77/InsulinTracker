@@ -1,6 +1,8 @@
 package com.heysoft.insulintracker
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -11,8 +13,26 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     val fchiValue: MutableLiveData<Double> = MutableLiveData()
     val mealEntries: MutableLiveData<List<MealEntry>> = MutableLiveData()
+    val isAgreementAccepted: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val mealEntryDao: MealEntryDao = MealDatabase.getDatabase(application).mealEntryDao()
+    private val sharedPreferences: SharedPreferences =
+        application.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
+    init {
+        loadPreferences()
+    }
+
+    private fun loadPreferences() {
+        isAgreementAccepted.value = sharedPreferences.getBoolean("isAgreementAccepted", false)
+    }
+
+    fun acceptAgreement() {
+        viewModelScope.launch {
+            sharedPreferences.edit().putBoolean("isAgreementAccepted", true).apply()
+            isAgreementAccepted.value = true
+        }
+    }
 
     fun loadMealEntries() {
         viewModelScope.launch {
@@ -45,4 +65,3 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 }
-

@@ -4,12 +4,14 @@ package com.heysoft.insulintracker
 import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.Update
 
 @Entity(tableName = "meal_entry")
 data class MealEntry(
@@ -24,6 +26,12 @@ data class MealEntry(
 interface MealEntryDao {
     @Insert
     suspend fun insertMealEntry(mealEntry: MealEntry)
+
+    @Update
+    suspend fun updateMealEntry(mealEntry: MealEntry)
+
+    @Delete
+    suspend fun deleteMealEntry(mealEntry: MealEntry)
 
     @Query("SELECT * FROM meal_entry")
     suspend fun getAllMealEntries(): List<MealEntry>

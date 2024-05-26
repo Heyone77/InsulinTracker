@@ -68,8 +68,8 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
     }
 
     val mealEntries by sharedViewModel.mealEntries.observeAsState(emptyList())
-
     var showDialog by remember { mutableStateOf(false) }
+    var selectedMealEntry by remember { mutableStateOf<MealEntry?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -97,7 +97,18 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                     items(mealEntries) { meal ->
                         val ukText =
                             if (meal.uk % 1.0 == 0.0) meal.uk.toInt().toString() else meal.uk.toString()
-                        Text(text = "${unixToDate(meal.dateUnix)} - ${intToMealTime(meal.mealTimeInt)} - УК: $ukText", fontSize = 20.sp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedMealEntry = meal
+                                    showDialog = true
+                                }
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = "${unixToDate(meal.dateUnix)} - ${intToMealTime(meal.mealTimeInt)} - УК: $ukText", fontSize = 20.sp)
+                        }
                     }
                 }
             }
@@ -105,10 +116,29 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
     }
 
     if (showDialog) {
-        MealInputDialog(onDismiss = { showDialog = false }, onSave = { meal ->
-            sharedViewModel.insertMealEntry(meal)
-            showDialog = false
-        }, sharedViewModel)
+        selectedMealEntry?.let { mealEntry ->
+            EditDeleteMealDialog(
+                mealEntry = mealEntry,
+                onDismiss = { showDialog = false },
+                onDelete = {
+                    sharedViewModel.deleteMealEntry(mealEntry)
+                    showDialog = false
+                },
+                onEdit = {
+                    sharedViewModel.updateMealEntry(it)
+                    showDialog = false
+                }
+            )
+        } ?: run {
+            MealInputDialog(
+                onDismiss = { showDialog = false },
+                onSave = { meal ->
+                    sharedViewModel.insertMealEntry(meal)
+                    showDialog = false
+                },
+                sharedViewModel = sharedViewModel
+            )
+        }
     }
 }
 
@@ -229,7 +259,7 @@ fun MealInputDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String) -> Unit) {
-    val context = LocalContext.current
+    LocalContext.current
     val calendar = Calendar.getInstance()
     val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
 
@@ -283,6 +313,50 @@ fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String
             )
         }
     }
+}
+
+@Composable
+fun EditDeleteMealDialog(
+    mealEntry: MealEntry,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onEdit: (MealEntry) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Редактировать или удалить запись") },
+        text = {
+            Column {
+                Text(text = "Выберите действие для записи:")
+                Text(text = "${unixToDate(mealEntry.dateUnix)} - ${intToMealTime(mealEntry.mealTimeInt)} - УК: ${mealEntry.uk}")
+            }
+        },
+        confirmButton = {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(onClick = {
+                    // Логика редактирования
+                    onEdit(mealEntry)
+                }) {
+                    Text("Редактировать")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(onClick = {
+                    // Логика удаления
+                    onDelete()
+                }) {
+                    Text("Удалить")
+                }
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Отмена")
+            }
+        }
+    )
 }
 
 @Composable

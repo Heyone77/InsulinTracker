@@ -10,10 +10,9 @@ import kotlinx.coroutines.launch
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    val fchiValue: MutableLiveData<Double> = MutableLiveData()
-
     private val mealEntryDao = MealDatabase.getDatabase(application).mealEntryDao()
 
+    val fchiValue: MutableLiveData<Double> = MutableLiveData()
 
     private val _mealEntries = MutableLiveData<List<MealEntry>>()
     val mealEntries: LiveData<List<MealEntry>> get() = _mealEntries
@@ -25,6 +24,20 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     fun insertMealEntry(mealEntry: MealEntry) {
         viewModelScope.launch(Dispatchers.IO) {
             mealEntryDao.insertMealEntry(mealEntry)
+            loadMealEntries()
+        }
+    }
+
+    fun updateMealEntry(mealEntry: MealEntry) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mealEntryDao.updateMealEntry(mealEntry)
+            loadMealEntries()
+        }
+    }
+
+    fun deleteMealEntry(mealEntry: MealEntry) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mealEntryDao.deleteMealEntry(mealEntry)
             loadMealEntries()
         }
     }

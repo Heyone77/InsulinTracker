@@ -178,8 +178,8 @@ fun MealInputDialog(
     var fchi by remember { mutableStateOf(mealEntryToEdit?.fchi?.toString() ?: "") }
     var selectedDate by remember { mutableStateOf(mealEntryToEdit?.dateUnix?.let { unixToDate(it) } ?: getCurrentDate()) }
 
-    val dozList = remember { mutableStateListOf(mealEntryToEdit?.doz?.toString() ?: "") }
-    val carbsList = remember { mutableStateListOf(mealEntryToEdit?.carbs?.toString() ?: "") }
+    val dozList = remember { mutableStateListOf("") }
+    val carbsList = remember { mutableStateListOf("") }
     val fchiState by sharedViewModel.fchiValue.observeAsState()
 
     val isSaveEnabled by remember {
@@ -187,7 +187,7 @@ fun MealInputDialog(
             stSk.isNotBlank() && otrabotkaSk.isNotBlank() && fchi.isNotBlank() &&
                     dozList.all { it.isNotBlank() } && carbsList.all { it.isNotBlank() } &&
                     stSk.toDoubleOrNullWithCommaSupport() != null && otrabotkaSk.toDoubleOrNullWithCommaSupport() != null &&
-                    fchi.toIntOrNull() != null && dozList.all { it.toDoubleOrNullWithCommaSupport() != null } &&
+                    fchi.toDoubleOrNullWithCommaSupport() != null && dozList.all { it.toDoubleOrNullWithCommaSupport() != null } &&
                     carbsList.all { it.toDoubleOrNullWithCommaSupport() != null }
         }
     }
@@ -248,22 +248,18 @@ fun MealInputDialog(
                     if (isSaveEnabled) {
                         val stSkValue = stSk.toDoubleOrNullWithCommaSupport() ?: 0.0
                         val otrabotkaSkValue = otrabotkaSk.toDoubleOrNullWithCommaSupport() ?: 0.0
-                        val fchiValue = fchi.toIntOrNull() ?: 0
+                        val fchiValue = fchi.toDoubleOrNullWithCommaSupport() ?: 0.0
                         val dozValue = dozList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
                         val carbsValue = carbsList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
-
-                        Log.i("MealInputDialog", "stSk: $stSkValue, otrabotkaSk: $otrabotkaSkValue, fchi: $fchiValue, doz: $dozValue, carbs: $carbsValue, xe: $xe")
 
                         val uk = calculateUk(
                             stSkValue,
                             otrabotkaSkValue,
-                            fchiValue.toDouble(),
+                            fchiValue,
                             dozValue,
                             carbsValue,
                             xe.toInt()
                         )
-
-                        Log.i("MealInputDialog", "Calculated UK: $uk")
 
                         val updatedMealEntry = mealEntryToEdit?.copy(
                             dateUnix = dateToUnix(selectedDate),
@@ -298,6 +294,7 @@ fun MealInputDialog(
         }
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

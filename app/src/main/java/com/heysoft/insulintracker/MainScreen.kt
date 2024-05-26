@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heysoft.insulintracker.screens.CarbsCountScreen
 import com.heysoft.insulintracker.screens.ScreenInfoDialog
+import com.heysoft.insulintracker.screens.SettingsScreen
 import com.heysoft.insulintracker.screens.ThreeDaysInsulinScreen
 import kotlinx.coroutines.launch
 
@@ -40,14 +41,16 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val currentScreen = remember { mutableStateOf("Учет углеводов") }
+    var currentScreen by remember { mutableStateOf("Учет углеводов") }
     var showInfoDialog by remember { mutableStateOf(false) }
 
     val screenTitleMap = mapOf(
         "carbsCountScreen" to "Расчёт УК",
         "recountCarbsCountScreen" to "Перерасчет УК",
         "threeDaysInsulin" to "ФЧИ",
-        "aboutScreen" to "О приложении"
+        "aboutScreen" to "О приложении",
+        "settingsScreen" to "Настройки",
+        "userAgreementScreen" to "Пользовательское соглашение"
     )
 
     ModalNavigationDrawer(
@@ -55,25 +58,27 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
         drawerContent = {
             ModalDrawerSheet(modifier = Modifier.width(240.dp), drawerShape = RectangleShape) {
                 DrawerContent(navController, drawerState, scope) { screen ->
-                    currentScreen.value = screenTitleMap[screen] ?: "Unknown"
-
+                    currentScreen = screenTitleMap[screen] ?: "Unknown"
                 }
-
             }
         },
         content = {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(currentScreen.value) },
+                        title = { Text(currentScreen) },
                         navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                            if (currentScreen != "Пользовательское соглашение") {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                                }
                             }
                         },
                         actions = {
-                            IconButton(onClick = { showInfoDialog = true }) {
-                                Icon(Icons.AutoMirrored.Outlined.Help, contentDescription = "Info")
+                            if (currentScreen != "Пользовательское соглашение") {
+                                IconButton(onClick = { showInfoDialog = true }) {
+                                    Icon(Icons.AutoMirrored.Outlined.Help, contentDescription = "Info")
+                                }
                             }
                         }
                     )
@@ -81,38 +86,48 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "carbsCountScreen",
+                    startDestination = if (sharedViewModel.isAgreementAccepted.value == true) "carbsCountScreen" else "userAgreementScreen",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("carbsCountScreen") {
-                        currentScreen.value = screenTitleMap["carbsCountScreen"] ?: "Расчёт УК"
+                        currentScreen = screenTitleMap["carbsCountScreen"] ?: "Расчёт УК"
                         CarbsCountScreen(sharedViewModel = sharedViewModel)
                     }
                     composable("recountCarbsCountScreen") {
-                        currentScreen.value =
-                            screenTitleMap["recountCarbsCountScreen"] ?: "Перерасчет УК"
+                        currentScreen = screenTitleMap["recountCarbsCountScreen"] ?: "Перерасчет УК"
                         RecountCarbsCountScreen()
                     }
                     composable("threeDaysInsulin") {
-                        currentScreen.value =
-                            screenTitleMap["threeDaysInsulin"] ?: "ФЧИ"
+                        currentScreen = screenTitleMap["threeDaysInsulin"] ?: "ФЧИ"
                         ThreeDaysInsulinScreen(sharedViewModel = sharedViewModel)
                     }
                     composable("aboutScreen") {
-                        currentScreen.value = screenTitleMap["aboutScreen"] ?: "О приложении"
+                        currentScreen = screenTitleMap["aboutScreen"] ?: "О приложении"
                         AboutScreen()
+                    }
+                    composable("settingsScreen") {
+                        currentScreen = screenTitleMap["settingsScreen"] ?: "Настройки"
+                        SettingsScreen()
+                    }
+                    composable("userAgreementScreen") {
+                        currentScreen = screenTitleMap["userAgreementScreen"] ?: "Пользовательское соглашение"
+                        UserAgreementScreen(sharedViewModel, navController) {
+                            navController.navigate("carbsCountScreen") {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }
                     }
                 }
 
                 if (showInfoDialog) {
                     ScreenInfoDialog(
-                        screenName = currentScreen.value,
+                        screenName = currentScreen,
                         onDismiss = { showInfoDialog = false }
                     )
                 }
             }
         }
-
     )
 }
 

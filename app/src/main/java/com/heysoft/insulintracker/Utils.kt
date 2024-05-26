@@ -43,7 +43,7 @@ fun calculateUk(
     carbs: Double,
     xe: Int
 ): Double {
-    val skDifference = stSk - otrabotkaSk
+    val skDifference = otrabotkaSk - stSk
     val skDifferenceRounded = String.format(Locale.US, "%.3f", skDifference).toDouble()
     Log.i("calculateUk", "SK Difference: $skDifferenceRounded")
 

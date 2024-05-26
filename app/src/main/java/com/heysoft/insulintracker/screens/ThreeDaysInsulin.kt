@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.heysoft.insulintracker.SharedViewModel
+import java.util.Locale
 
 @Composable
 fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
@@ -35,16 +36,18 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "\uD83D\uDD34 ФЧИ (ФАКТОР ЧУВСТВИТЕЛЬНОСТИ К ИНСУЛИНУ) ИЛИ НА СКОЛЬКО 1 ЕДИНИЦА ИНСУЛИНА СНИЖАЕТ САХАР КРОВИ\n" +
-                "\uD83D\uDD34 Зачем нужно знать ФЧИ?\n" +
-                "⭕Для расчета углеводного коэффициента\n" +
-                "⭕Для коррекции высокого СК \n" +
-                "⭕Для снижения дозы пищевого инсулина, если СК низкий")
+        Text(
+            text = "\uD83D\uDD34 ФЧИ (ФАКТОР ЧУВСТВИТЕЛЬНОСТИ К ИНСУЛИНУ) ИЛИ НА СКОЛЬКО 1 ЕДИНИЦА ИНСУЛИНА СНИЖАЕТ САХАР КРОВИ\n" +
+                    "\uD83D\uDD34 Зачем нужно знать ФЧИ?\n" +
+                    "⭕Для расчета углеводного коэффициента\n" +
+                    "⭕Для коррекции высокого СК \n" +
+                    "⭕Для снижения дозы пищевого инсулина, если СК низкий"
+        )
         OutlinedTextField(
             value = input,
             onValueChange = {
-                if (it.all { char -> char.isDigit() || char == '.' }) {
-                    input = it
+                if (it.all { char -> char.isDigit() || char == '.' || char == ',' }) {
+                    input = it.replace(',', '.')
                 }
             },
             label = { Text("Кол-во инсулина за 3 дня (на еду)") },
@@ -91,6 +94,5 @@ fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
 
 fun calculateResult(value: Double): String {
     val result = 100 / (value / 3)
-    val decimalFormat = java.text.DecimalFormat("#")
-    return decimalFormat.format(result)
+    return String.format(Locale.US, "%.2f", result)
 }

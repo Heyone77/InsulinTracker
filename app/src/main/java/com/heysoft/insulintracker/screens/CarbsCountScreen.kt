@@ -21,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -101,20 +103,10 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
             } else {
                 LazyColumn {
                     items(mealEntries) { meal ->
-                        val ukText = String.format(Locale.US, "%.2f", meal.uk)
-                        Log.i("CarbsCountScreen", "Displaying meal entry: ${meal.dateUnix}, ${meal.mealTimeInt}, UK: ${meal.uk}")
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    selectedMealEntry = meal
-                                    showEditDeleteDialog = true
-                                }
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = "${unixToDate(meal.dateUnix)} - ${intToMealTime(meal.mealTimeInt)} - УК: $ukText", fontSize = 20.sp)
-                        }
+                        MealEntryCard(meal = meal, onClick = {
+                            selectedMealEntry = meal
+                            showEditDeleteDialog = true
+                        })
                     }
                 }
             }
@@ -140,7 +132,6 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
     if (showEditDeleteDialog) {
         selectedMealEntry?.let { mealEntry ->
             EditDeleteMealDialog(
-                mealEntry = mealEntry,
                 onDismiss = { showEditDeleteDialog = false },
                 onDelete = {
                     sharedViewModel.deleteMealEntry(mealEntry)
@@ -151,6 +142,23 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                     showDialog = true
                 }
             )
+        }
+    }
+}
+@Composable
+fun MealEntryCard(meal: MealEntry, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Дата: ${unixToDate(meal.dateUnix)}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Прием пищи: ${intToMealTime(meal.mealTimeInt)}", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "УК: ${String.format(Locale.US, "%.2f", meal.uk)}", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -170,8 +178,8 @@ fun MealInputDialog(
     var fchi by remember { mutableStateOf(mealEntryToEdit?.fchi?.toString() ?: "") }
     var selectedDate by remember { mutableStateOf(mealEntryToEdit?.dateUnix?.let { unixToDate(it) } ?: getCurrentDate()) }
 
-    val dozList = remember { mutableStateListOf(mealEntryToEdit?.doz?.toString() ?: "") }
-    val carbsList = remember { mutableStateListOf(mealEntryToEdit?.carbs?.toString() ?: "") }
+    val dozList = remember { mutableStateListOf("") }
+    val carbsList = remember { mutableStateListOf("") }
     val fchiState by sharedViewModel.fchiValue.observeAsState()
 
     val isSaveEnabled by remember {
@@ -179,7 +187,7 @@ fun MealInputDialog(
             stSk.isNotBlank() && otrabotkaSk.isNotBlank() && fchi.isNotBlank() &&
                     dozList.all { it.isNotBlank() } && carbsList.all { it.isNotBlank() } &&
                     stSk.toDoubleOrNullWithCommaSupport() != null && otrabotkaSk.toDoubleOrNullWithCommaSupport() != null &&
-                    fchi.toIntOrNull() != null && dozList.all { it.toDoubleOrNullWithCommaSupport() != null } &&
+                    fchi.toDoubleOrNullWithCommaSupport() != null && dozList.all { it.toDoubleOrNullWithCommaSupport() != null } &&
                     carbsList.all { it.toDoubleOrNullWithCommaSupport() != null }
         }
     }
@@ -240,22 +248,18 @@ fun MealInputDialog(
                     if (isSaveEnabled) {
                         val stSkValue = stSk.toDoubleOrNullWithCommaSupport() ?: 0.0
                         val otrabotkaSkValue = otrabotkaSk.toDoubleOrNullWithCommaSupport() ?: 0.0
-                        val fchiValue = fchi.toIntOrNull() ?: 0
+                        val fchiValue = fchi.toDoubleOrNullWithCommaSupport() ?: 0.0
                         val dozValue = dozList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
                         val carbsValue = carbsList.sumOf { it.toDoubleOrNullWithCommaSupport() ?: 0.0 }
-
-                        Log.i("MealInputDialog", "stSk: $stSkValue, otrabotkaSk: $otrabotkaSkValue, fchi: $fchiValue, doz: $dozValue, carbs: $carbsValue, xe: $xe")
 
                         val uk = calculateUk(
                             stSkValue,
                             otrabotkaSkValue,
-                            fchiValue.toDouble(),
+                            fchiValue,
                             dozValue,
                             carbsValue,
                             xe.toInt()
                         )
-
-                        Log.i("MealInputDialog", "Calculated UK: $uk")
 
                         val updatedMealEntry = mealEntryToEdit?.copy(
                             dateUnix = dateToUnix(selectedDate),
@@ -291,12 +295,13 @@ fun MealInputDialog(
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String) -> Unit) {
     LocalContext.current
     val calendar = Calendar.getInstance()
-    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd MMM yy", Locale.getDefault())
 
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
@@ -352,18 +357,16 @@ fun DatePickerField(label: String, selectedDate: String, onDateSelected: (String
 
 @Composable
 fun EditDeleteMealDialog(
-    mealEntry: MealEntry,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Редактировать или удалить запись") },
         text = {
             Column {
-                Text(text = "Выберите действие для записи:")
-                Text(text = "${unixToDate(mealEntry.dateUnix)} - ${intToMealTime(mealEntry.mealTimeInt)} - УК: ${mealEntry.uk}")
+                Text(text = "Выберите действие для записи")
+
             }
         },
         confirmButton = {

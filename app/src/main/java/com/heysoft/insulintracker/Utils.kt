@@ -43,51 +43,29 @@ fun calculateUk(
     carbs: Double,
     xe: Int
 ): Double {
+    val skDifference = stSk - otrabotkaSk
+    val skDifferenceRounded = String.format(Locale.US, "%.3f", skDifference).toDouble()
+    Log.i("calculateUk", "SK Difference: $skDifferenceRounded")
 
-    val uk = ((otrabotkaSk - stSk) / fchi + doz) / (carbs / xe)
-    Log.i(
-        "calculateUk",
-        "stSk: $stSk, otrabotkaSk: $otrabotkaSk, fchi: $fchi, doz: $doz, carbs: $carbs, xe: $xe, uk: $uk"
-    )
-    return uk
+    val divisionByFchi = skDifferenceRounded / fchi
+    val divisionByFchiRounded = String.format(Locale.US, "%.3f", divisionByFchi).toDouble()
+    Log.i("calculateUk", "Division by FCHI: $divisionByFchiRounded")
+
+    val additionOfDoz = divisionByFchiRounded + doz
+    val additionOfDozRounded = String.format(Locale.US, "%.3f", additionOfDoz).toDouble()
+    Log.i("calculateUk", "Addition of Doz: $additionOfDozRounded")
+
+    val carbsDivisionByXe = carbs / xe
+    val carbsDivisionByXeRounded = String.format(Locale.US, "%.3f", carbsDivisionByXe).toDouble()
+    Log.i("calculateUk", "Carbs Division by XE: $carbsDivisionByXeRounded")
+
+    val uk = additionOfDozRounded / carbsDivisionByXeRounded
+    val ukRounded = String.format(Locale.US, "%.3f", uk).toDouble()
+    Log.i("calculateUk", "Calculated UK: $ukRounded")
+
+    return ukRounded
 }
 
-//fun calculateUk(
-//    stSk: Double,
-//    otrabotkaSk: Double,
-//    fchi: Double,
-//    doz: Double,
-//    carbs: Double,
-//    xe: Int
-//): Double {
-//    // Вычисление разницы стартового и обработанного СК
-//    val skDifference = stSk - otrabotkaSk
-//    val skDifferenceRounded = String.format(Locale.US, "%.3f", skDifference).toDouble()
-//    Log.i("calculateUk", "SK Difference: $skDifferenceRounded")
-//
-//    // Вычисление деления на ФЧИ
-//    val divisionByFchi = skDifferenceRounded / fchi
-//    val divisionByFchiRounded = String.format(Locale.US, "%.3f", divisionByFchi).toDouble()
-//    Log.i("calculateUk", "Division by FCHI: $divisionByFchiRounded")
-//
-//    // Сложение дозы
-//    val additionOfDoz = divisionByFchiRounded + doz
-//    val additionOfDozRounded = String.format(Locale.US, "%.3f", additionOfDoz).toDouble()
-//    Log.i("calculateUk", "Addition of Doz: $additionOfDozRounded")
-//
-//    // Вычисление деления углеводов на ХЕ
-//    val carbsDivisionByXe = carbs / xe
-//    val carbsDivisionByXeRounded = String.format(Locale.US, "%.3f", carbsDivisionByXe).toDouble()
-//    Log.i("calculateUk", "Carbs Division by XE: $carbsDivisionByXeRounded")
-//
-//    // Окончательное вычисление УК
-//    val uk = additionOfDozRounded / carbsDivisionByXeRounded
-//    val ukRounded = String.format(Locale.US, "%.3f", uk).toDouble()
-//    Log.i("calculateUk", "Calculated UK: $ukRounded")
-//    Log.i("calculateUk", "Значения $stSk $otrabotkaSk $fchi $doz $carbs $xe")
-//
-//    return ukRounded
-//}
 
 fun String.toDoubleOrNullWithCommaSupport(): Double? {
     val normalized = this.replace(',', '.')
@@ -95,17 +73,17 @@ fun String.toDoubleOrNullWithCommaSupport(): Double? {
 }
 
 fun getCurrentDate(): String {
-    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd MMM yy", Locale.getDefault())
     return dateFormatter.format(Calendar.getInstance().time)
 }
 
 fun dateToUnix(date: String): Long {
-    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd MMM yy", Locale.getDefault())
     return dateFormatter.parse(date)?.time ?: 0L
 }
 
 fun unixToDate(unixTime: Long): String {
-    val dateFormatter = SimpleDateFormat("dd-MMM-yy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd MMM yy", Locale.getDefault())
     return dateFormatter.format(Date(unixTime))
 }
 

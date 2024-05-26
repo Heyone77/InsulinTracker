@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.DecimalFormat
@@ -89,14 +90,16 @@ fun RecountCarbsCountScreen() {
                 val planValue = plan.toDoubleOrNull()
 
                 if (stalValue != null && bylValue != null && planValue != null) {
-                    pereraschetUK = formatResult(calculatePereraschetUK(stalValue, bylValue, planValue))
-                    sredniyUK = formatResult(calculateSredniyUK(stalValue, bylValue, planValue))
+                    pereraschetUK = formatResult(RecountUK(stalValue, bylValue, planValue))
+                    sredniyUK = formatResult(calculateAverageUK(stalValue, bylValue, planValue))
                 } else {
                     pereraschetUK = "Invalid input"
                     sredniyUK = "Invalid input"
                 }
             },
-            modifier = Modifier.align(Alignment.End).fillMaxWidth()
+            modifier = Modifier
+                .align(Alignment.End)
+                .fillMaxWidth()
         ) {
             Text("Рассчитать")
         }
@@ -114,15 +117,22 @@ fun RecountCarbsCountScreen() {
                 fontSize = 20.sp
             )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = "🔴Перерасчет УК необходим для того, чтобы скорректировать коэффициент на предстоящий прием пищи исходя из потребности (в случае ее изменения) опираясь на предыдущий прием пищи.\n" +
+                    "⭕Данный раздел рекомендуется использовать более опытным пользователям. \n" +
+                    "⭕Перед перерасчетом коэффициентов рекомендуется изучить текст справки (\"I\" в правом верхнем углу экрана).",
+            fontSize = 16.sp, textAlign = TextAlign.Justify
+        )
     }
 }
 
-fun calculatePereraschetUK(stal: Double, byl: Double, plan: Double): Double {
+fun RecountUK(stal: Double, byl: Double, plan: Double): Double {
     return stal / byl * plan
 }
 
-fun calculateSredniyUK(stal: Double, byl: Double, plan: Double): Double {
-    val pereraschet = calculatePereraschetUK(stal, byl, plan)
+fun calculateAverageUK(stal: Double, byl: Double, plan: Double): Double {
+    val pereraschet = RecountUK(stal, byl, plan)
     return (pereraschet + plan) / 2
 }
 

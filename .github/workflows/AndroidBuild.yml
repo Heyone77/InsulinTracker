@@ -1,12 +1,14 @@
 name: AndroidBuild
 on:
   pull_request:
+    types: [closed]
     branches:
       - feature
+
 jobs:
   build:
-    runs-on:
-      ubuntu-latest
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.5
@@ -14,7 +16,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4.2.1
         with:
-          java-version: '1.8'
+          java-version: '17'
           distribution: 'adopt'
 
       - name: Build with Gradle
@@ -25,3 +27,24 @@ jobs:
         with:
           name: insulinTracker.apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/debug/app-debug.apk
+          asset_name: insulinTracker.apk
+          asset_content_type: application/vnd.android.package-archive

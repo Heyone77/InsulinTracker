@@ -1,6 +1,5 @@
 package com.heysoft.insulintracker.screens
 
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -99,7 +98,7 @@ fun CarbsCountScreen(sharedViewModel: SharedViewModel) {
                 .padding(16.dp)
         ) {
             if (mealEntries.isEmpty()) {
-                Text("Нет данных для отображения", fontSize = 20.sp, modifier = Modifier.padding(16.dp))
+                Text("Нет данных для отображения", fontSize = 20.sp, modifier = Modifier.padding(25.dp))
             } else {
                 LazyColumn {
                     items(mealEntries) { meal ->

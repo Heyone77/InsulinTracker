@@ -42,7 +42,7 @@ fun ScreenInfoDialog(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(16.dp)
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(8.dp))
         ) {
             Column(
                 modifier = Modifier
@@ -63,7 +63,8 @@ fun ScreenInfoDialog(
                     Text(
                         text = infoText,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Row(

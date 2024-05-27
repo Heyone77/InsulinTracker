@@ -1,3 +1,5 @@
+package com.heysoft.insulintracker.screens
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

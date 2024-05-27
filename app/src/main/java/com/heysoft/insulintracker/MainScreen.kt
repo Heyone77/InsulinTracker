@@ -1,6 +1,5 @@
 package com.heysoft.insulintracker
 
-import AboutScreen
 import RecountCarbsCountScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.heysoft.insulintracker.screens.AboutScreen
 import com.heysoft.insulintracker.screens.CarbsCountScreen
 import com.heysoft.insulintracker.screens.ScreenInfoDialog
 import com.heysoft.insulintracker.screens.SettingsScreen

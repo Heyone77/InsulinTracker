@@ -3,7 +3,6 @@ package com.heysoft.insulintracker.ui.theme
 import MyTypography
 import android.app.Activity
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -46,9 +45,9 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun InsulinTrackerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    darkTheme: Boolean,
     dynamicColor: Boolean = true,
+    onThemeChange: (Boolean) -> Unit,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -65,7 +64,7 @@ fun InsulinTrackerTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

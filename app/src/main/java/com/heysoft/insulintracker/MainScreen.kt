@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(sharedViewModel: SharedViewModel) {
+fun MainScreen(sharedViewModel: SharedViewModel, isDarkTheme: MutableState<Boolean>) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -107,7 +108,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
                     }
                     composable("settingsScreen") {
                         currentScreen = screenTitleMap["settingsScreen"] ?: "Настройки"
-                        SettingsScreen()
+                        SettingsScreen(isDarkTheme = isDarkTheme)
                     }
                     composable("userAgreementScreen") {
                         currentScreen = screenTitleMap["userAgreementScreen"] ?: "Пользовательское соглашение"
@@ -130,5 +131,4 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
         }
     )
 }
-
 

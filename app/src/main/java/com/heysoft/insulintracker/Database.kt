@@ -70,11 +70,11 @@ interface EventDao {
     @Query("DELETE FROM events WHERE id = :eventId")
     suspend fun deleteEvent(eventId: Int)
 
-    @Query("UPDATE events SET workId = :workId WHERE id = :eventId")
-    suspend fun updateEventWorkId(eventId: Int, workId: String)
-
     @Query("SELECT workId FROM events WHERE id = :eventId")
     suspend fun getEventWorkId(eventId: Int): String?
+
+    @Query("UPDATE events SET workId = :workId WHERE id = :eventId")
+    suspend fun updateEventWorkId(eventId: Int, workId: String?)
 }
 
 

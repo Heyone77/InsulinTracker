@@ -38,17 +38,18 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             applicationContext,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE // Добавлен флаг mutability
         )
 
         val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_notification) // Убедитесь, что эта иконка существует
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
+        // Проверка разрешения перед отправкой уведомления
         if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             with(NotificationManagerCompat.from(applicationContext)) {
                 Log.d("NotificationWorker", "showNotification: Sending notification with ID: $notificationId")
@@ -71,7 +72,6 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
                 val notificationManager: NotificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.createNotificationChannel(channel)
-                Log.d("NotificationWorker", "createNotificationChannel: Notification channel created")
             }
         }
     }

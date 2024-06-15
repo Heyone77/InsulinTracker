@@ -6,8 +6,10 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -126,6 +128,9 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
+    var showDateError by remember { mutableStateOf(false) }
+    var showTimeError by remember { mutableStateOf(false) }
+    var showNoteError by remember { mutableStateOf(false) }
 
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -135,6 +140,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
         { _, year, month, dayOfMonth ->
             calendar.set(year, month, dayOfMonth)
             date = dateFormat.format(calendar.time)
+            showDateError = false
             Log.d("EventDialog", "Date selected: $date")
         },
         calendar.get(Calendar.YEAR),
@@ -148,6 +154,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
             time = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar.set(Calendar.MINUTE, minute)
+            showTimeError = false
             Log.d("EventDialog", "Time selected: $time")
         },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
@@ -158,7 +165,11 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier.padding(16.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
                 Text(
                     text = "Добавить событие",
                     fontSize = 20.sp,
@@ -168,30 +179,35 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
 
                 OutlinedButton(
                     onClick = { datePickerDialog.show() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = if (date.isEmpty()) "Выберите дату" else date)
+                }
+                if (showDateError) {
+                    Text(text = "Дата обязательна", color = Color.Red, fontSize = 12.sp)
                 }
 
                 OutlinedButton(
                     onClick = { timePickerDialog.show() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = if (time.isEmpty()) "Выберите время" else time)
+                }
+                if (showTimeError) {
+                    Text(text = "Время обязательно", color = Color.Red, fontSize = 12.sp)
                 }
 
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
                     label = { Text("Заметка") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
+                if (showNoteError) {
+                    Text(text = "Заметка обязательна", color = Color.Red, fontSize = 12.sp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -201,11 +217,17 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
                         Text("Отмена")
                     }
                     Button(onClick = {
-                        Log.d(
-                            "EventDialog",
-                            "Saving event with date: $date, time: $time, note: $note"
-                        )
-                        onSave(Event(date = date, time = time, note = note))
+                        if (date.isEmpty()) showDateError = true
+                        if (time.isEmpty()) showTimeError = true
+                        if (note.isEmpty()) showNoteError = true
+
+                        if (date.isNotEmpty() && time.isNotEmpty() && note.isNotEmpty()) {
+                            Log.d(
+                                "EventDialog",
+                                "Saving event with date: $date, time: $time, note: $note"
+                            )
+                            onSave(Event(date = date, time = time, note = note))
+                        }
                     }) {
                         Text("Сохранить")
                     }

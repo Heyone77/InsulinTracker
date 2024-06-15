@@ -132,9 +132,12 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private fun cancelScheduledNotification(eventId: Int) {
         viewModelScope.launch {
             val workId = eventDao.getEventWorkId(eventId)
+            Log.d("SharedViewModel", "cancelScheduledNotification: Retrieved work ID: $workId for event ID: $eventId")
             if (workId != null) {
                 WorkManager.getInstance(getApplication()).cancelWorkById(UUID.fromString(workId))
                 Log.d("SharedViewModel", "cancelScheduledNotification: Cancelled notification with Work ID: $workId")
+                eventDao.updateEventWorkId(eventId, null) // Очистить Work ID после удаления события
+                Log.d("SharedViewModel", "cancelScheduledNotification: Updated event with ID: $eventId, cleared work ID")
             }
         }
     }

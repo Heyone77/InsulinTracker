@@ -91,7 +91,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     fun insertEvent(event: Event) {
         viewModelScope.launch {
             Log.d("SharedViewModel", "insertEvent: Inserting event with date: ${event.date} and time: ${event.time}")
-            val eventId = eventDao.insertEvent(event)
+            val eventId = eventDao.insertEvent(event).toInt()
             scheduleNotification(event, eventId)
         }
     }
@@ -104,7 +104,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private suspend fun scheduleNotification(event: Event, eventId: Long) {
+    private suspend fun scheduleNotification(event: Event, eventId: Int) {
         val timeDiff = calculateTimeDiff(event.date, event.time)
         if (timeDiff > 0) {
             Log.d("SharedViewModel", "scheduleNotification: Scheduling notification for event with date: ${event.date} and time: ${event.time} in $timeDiff milliseconds")
@@ -112,6 +112,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             val data = Data.Builder()
                 .putString("eventTitle", "Напоминание")
                 .putString("eventDescription", event.note)
+                .putInt("eventId", eventId)
                 .build()
 
             val notificationWork = OneTimeWorkRequestBuilder<NotificationWorker>()
@@ -122,8 +123,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             WorkManager.getInstance(getApplication()).enqueue(notificationWork)
             Log.d("SharedViewModel", "scheduleNotification: Notification scheduled with Work ID: ${notificationWork.id}")
 
-            // Обновляем запись события с Work ID
-            eventDao.updateEventWorkId(eventId.toInt(), notificationWork.id.toString())
+            eventDao.updateEventWorkId(eventId, notificationWork.id.toString())
         } else {
             Log.e("SharedViewModel", "scheduleNotification: Invalid time difference, notification not scheduled")
         }

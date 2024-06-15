@@ -67,7 +67,7 @@ fun EventListScreen(modifier: Modifier = Modifier, sharedViewModel: SharedViewMo
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
+            FloatingActionButton(onClick = { showDialog = true }, containerColor = MaterialTheme.colorScheme.primary) {
                 Icon(Icons.Default.Add, contentDescription = "Add Event")
             }
         },
@@ -78,12 +78,6 @@ fun EventListScreen(modifier: Modifier = Modifier, sharedViewModel: SharedViewMo
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "События",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
                 LazyColumn {
                     items(events) { event ->
                         EventCard(event = event, onDelete = { sharedViewModel.deleteEvent(it) })

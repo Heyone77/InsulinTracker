@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heysoft.insulintracker.screens.AboutScreen
 import com.heysoft.insulintracker.screens.CarbsCountScreen
+import com.heysoft.insulintracker.screens.ChatsScreen
 import com.heysoft.insulintracker.screens.EventListScreen
 import com.heysoft.insulintracker.screens.ScreenInfoDialog
 import com.heysoft.insulintracker.screens.SettingsScreen
@@ -52,6 +53,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
         "aboutScreen" to "О приложении",
         "settingsScreen" to "Настройки",
         "addEventScreen" to "Добавить событие",
+        "chatScreen" to "Чаты и каналы с полезной информацией",  // Новый экран
         "userAgreementScreen" to "Пользовательское соглашение"
     )
 
@@ -114,6 +116,10 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
                     composable("addEventScreen") {
                         currentScreen = screenTitleMap["addEventScreen"] ?: "Добавить событие"
                         EventListScreen()
+                    }
+                    composable("chatScreen") {  // Новый экран
+                        currentScreen = screenTitleMap["chatScreen"] ?: "Чаты и каналы с полезной информацией"
+                        ChatsScreen()
                     }
                     composable("userAgreementScreen") {
                         currentScreen = screenTitleMap["userAgreementScreen"] ?: "Пользовательское соглашение"

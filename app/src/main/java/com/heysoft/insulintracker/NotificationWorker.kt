@@ -20,14 +20,15 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
     override fun doWork(): Result {
         val eventTitle = inputData.getString("eventTitle") ?: "Событие"
         val eventDescription = inputData.getString("eventDescription") ?: "Напоминание о событии"
+        val eventId = inputData.getInt("eventId", -1)
 
         Log.d("NotificationWorker", "doWork: Creating notification with title: $eventTitle and description: $eventDescription")
 
-        showNotification(eventTitle, eventDescription)
+        showNotification(eventTitle, eventDescription, eventId)
         return Result.success()
     }
 
-    private fun showNotification(title: String, description: String) {
+    private fun showNotification(title: String, description: String, eventId: Int) {
         val notificationId = System.currentTimeMillis().toInt()
         val channelId = "event_channel"
 
@@ -38,25 +39,34 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             applicationContext,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE // Добавлен флаг mutability
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Intent для удаления события
+        val deleteIntent = Intent(applicationContext, NotificationReceiver::class.java).apply {
+            action = "DELETE_EVENT"
+            putExtra("eventId", eventId)
+        }
+        val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            0,
+            deleteIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.ic_notification) // Убедитесь, что эта иконка существует
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .addAction(R.drawable.ic_notification, "Удалить", deletePendingIntent)  // Добавляем кнопку действия
 
-        // Проверка разрешения перед отправкой уведомления
         if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             with(NotificationManagerCompat.from(applicationContext)) {
-                Log.d("NotificationWorker", "showNotification: Sending notification with ID: $notificationId")
                 notify(notificationId, builder.build())
             }
-        } else {
-            Log.e("NotificationWorker", "showNotification: Missing POST_NOTIFICATIONS permission")
         }
     }
 

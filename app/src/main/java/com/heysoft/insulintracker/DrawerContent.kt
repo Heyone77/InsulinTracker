@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Settings
@@ -86,6 +87,18 @@ fun DrawerContent(
             onClick = {
                 onScreenSelected("Добавить событие")
                 navController.navigate("addEventScreen") {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
+                }
+                scope.launch { drawerState.close() }
+            }
+        )
+        NavigationDrawerItem(
+            label = "Чаты и каналы с полезной информацией",
+            icon = Icons.AutoMirrored.Filled.Chat,
+            onClick = {
+                onScreenSelected("Чаты и каналы с полезной информацией")
+                navController.navigate("chatScreen") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }

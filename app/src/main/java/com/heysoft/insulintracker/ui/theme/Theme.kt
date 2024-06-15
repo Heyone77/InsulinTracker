@@ -47,7 +47,6 @@ private val LightColorScheme = lightColorScheme(
 fun InsulinTrackerTheme(
     darkTheme: Boolean,
     dynamicColor: Boolean = true,
-    onThemeChange: (Boolean) -> Unit,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

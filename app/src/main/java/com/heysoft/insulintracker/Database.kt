@@ -11,7 +11,21 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.Update
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.flow.Flow
+
+@Entity(tableName = "events")
+data class Event(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val date: String,
+    val time: String,
+    val note: String,
+    val workId: String? = null
+)
+
 
 @Entity(tableName = "meal_entry")
 data class MealEntry(
@@ -45,10 +59,30 @@ interface MealEntryDao {
     suspend fun deleteAllMealEntries()
 }
 
+@Dao
+interface EventDao {
+    @Query("SELECT * FROM events")
+    fun getAllEvents(): Flow<List<Event>>
 
-@Database(entities = [MealEntry::class], version = 3, exportSchema = false)
+    @Insert
+    suspend fun insertEvent(event: Event): Long
+
+    @Query("DELETE FROM events WHERE id = :eventId")
+    suspend fun deleteEvent(eventId: Int)
+
+    @Query("SELECT workId FROM events WHERE id = :eventId")
+    suspend fun getEventWorkId(eventId: Int): String?
+
+    @Query("UPDATE events SET workId = :workId WHERE id = :eventId")
+    suspend fun updateEventWorkId(eventId: Int, workId: String?)
+}
+
+
+@Database(entities = [MealEntry::class, Event::class], version = 5, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class MealDatabase : RoomDatabase() {
     abstract fun mealEntryDao(): MealEntryDao
+    abstract fun eventDao(): EventDao
 
     companion object {
         @Volatile
@@ -61,10 +95,17 @@ abstract class MealDatabase : RoomDatabase() {
                     MealDatabase::class.java,
                     "meal_database"
                 )
-                    .fallbackToDestructiveMigration() // Добавим это, чтобы база данных пересоздавалась при изменении схемы
+                    .addMigrations(MIGRATION_4_5)
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
+            }
+        }
+
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE events ADD COLUMN workId TEXT")
             }
         }
     }

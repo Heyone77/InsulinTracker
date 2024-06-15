@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.DrawerState
@@ -80,24 +81,35 @@ fun DrawerContent(
             }
         )
         NavigationDrawerItem(
-            label = "О приложении",
-            icon = Icons.AutoMirrored.Filled.Help,
+            label = "Добавить событие",
+            icon = Icons.Default.Event,
             onClick = {
-                onScreenSelected("О приложении")
-                navController.navigate("aboutScreen") {
+                onScreenSelected("Добавить событие")
+                navController.navigate("addEventScreen") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }
                 scope.launch { drawerState.close() }
             }
         )
-
         NavigationDrawerItem(
             label = "Настройки",
-            icon = Icons.Default.Settings,  // Поменяйте на соответствующую иконку
+            icon = Icons.Default.Settings,
             onClick = {
                 onScreenSelected("Настройки")
                 navController.navigate("settingsScreen") {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
+                }
+                scope.launch { drawerState.close() }
+            }
+        )
+        NavigationDrawerItem(
+            label = "О приложении",
+            icon = Icons.AutoMirrored.Filled.Help,
+            onClick = {
+                onScreenSelected("О приложении")
+                navController.navigate("aboutScreen") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }

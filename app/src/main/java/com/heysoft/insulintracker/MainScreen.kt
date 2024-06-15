@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heysoft.insulintracker.screens.AboutScreen
 import com.heysoft.insulintracker.screens.CarbsCountScreen
+import com.heysoft.insulintracker.screens.EventListScreen
 import com.heysoft.insulintracker.screens.ScreenInfoDialog
 import com.heysoft.insulintracker.screens.SettingsScreen
 import com.heysoft.insulintracker.screens.ThreeDaysInsulinScreen
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(sharedViewModel: SharedViewModel, isDarkTheme: MutableState<Boolean>) {
+fun MainScreen(sharedViewModel: SharedViewModel) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -51,6 +51,7 @@ fun MainScreen(sharedViewModel: SharedViewModel, isDarkTheme: MutableState<Boole
         "threeDaysInsulin" to "ФЧИ",
         "aboutScreen" to "О приложении",
         "settingsScreen" to "Настройки",
+        "addEventScreen" to "Добавить событие",
         "userAgreementScreen" to "Пользовательское соглашение"
     )
 
@@ -108,7 +109,11 @@ fun MainScreen(sharedViewModel: SharedViewModel, isDarkTheme: MutableState<Boole
                     }
                     composable("settingsScreen") {
                         currentScreen = screenTitleMap["settingsScreen"] ?: "Настройки"
-                        SettingsScreen(isDarkTheme = isDarkTheme)
+                        SettingsScreen(sharedViewModel)
+                    }
+                    composable("addEventScreen") {
+                        currentScreen = screenTitleMap["addEventScreen"] ?: "Добавить событие"
+                        EventListScreen()
                     }
                     composable("userAgreementScreen") {
                         currentScreen = screenTitleMap["userAgreementScreen"] ?: "Пользовательское соглашение"
@@ -131,4 +136,5 @@ fun MainScreen(sharedViewModel: SharedViewModel, isDarkTheme: MutableState<Boole
         }
     )
 }
+
 

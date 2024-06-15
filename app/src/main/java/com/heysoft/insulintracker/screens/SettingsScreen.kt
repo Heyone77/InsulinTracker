@@ -11,21 +11,24 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.heysoft.insulintracker.SharedViewModel
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, isDarkTheme: MutableState<Boolean>) {
+fun SettingsScreen(sharedViewModel: SharedViewModel) {
+    val isDarkTheme by sharedViewModel.isDarkTheme.observeAsState(false)
+
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -33,9 +36,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, isDarkTheme: MutableState<Bool
         ) {
             Text(text = "Темная тема", fontSize = 18.sp)
             Switch(
-                checked = isDarkTheme.value,
+                checked = isDarkTheme,
                 onCheckedChange = { newTheme ->
-                    isDarkTheme.value = newTheme
+                    sharedViewModel.setDarkTheme(newTheme)
                 },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,

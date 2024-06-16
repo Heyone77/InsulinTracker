@@ -42,7 +42,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Intent для удаления события
+
         val deleteIntent = Intent(applicationContext, NotificationReceiver::class.java).apply {
             action = "DELETE_EVENT"
             putExtra("eventId", eventId)

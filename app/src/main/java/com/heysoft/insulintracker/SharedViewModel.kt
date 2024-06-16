@@ -136,7 +136,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             if (workId != null) {
                 WorkManager.getInstance(getApplication()).cancelWorkById(UUID.fromString(workId))
                 Log.d("SharedViewModel", "cancelScheduledNotification: Cancelled notification with Work ID: $workId")
-                eventDao.updateEventWorkId(eventId, null) // Очистить Work ID после удаления события
+                eventDao.updateEventWorkId(eventId, null)
                 Log.d("SharedViewModel", "cancelScheduledNotification: Updated event with ID: $eventId, cleared work ID")
             }
         }
@@ -148,7 +148,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         val eventDate = dateFormat.parse(dateTimeString)
         val currentTime = Date()
         return if (eventDate != null) {
-            eventDate.time - currentTime.time
+            val timeDiff = eventDate.time - currentTime.time
+            if (timeDiff <= 0) 1000L else timeDiff
         } else {
             0L
         }

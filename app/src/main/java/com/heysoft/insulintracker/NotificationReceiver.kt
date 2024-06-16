@@ -18,7 +18,6 @@ class NotificationReceiver : BroadcastReceiver() {
                     ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
                 ).get(SharedViewModel::class.java)
 
-                // Удалить событие через ViewModel
                 sharedViewModel.deleteEvent(eventId)
 
                 Log.d("NotificationReceiver", "Event with ID: $eventId deleted.")

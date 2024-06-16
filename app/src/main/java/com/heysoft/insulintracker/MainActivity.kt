@@ -24,9 +24,9 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Разрешение предоставлено
+
         } else {
-            // Разрешение отклонено
+
         }
     }
 

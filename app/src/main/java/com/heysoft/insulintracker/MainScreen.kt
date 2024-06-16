@@ -53,7 +53,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
         "aboutScreen" to "О приложении",
         "settingsScreen" to "Настройки",
         "addEventScreen" to "Добавить событие",
-        "chatScreen" to "Чаты и каналы с полезной информацией",  // Новый экран
+        "chatScreen" to "Чаты и каналы с полезной информацией",
         "userAgreementScreen" to "Пользовательское соглашение"
     )
 

@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.workers
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -14,6 +14,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.heysoft.insulintracker.MainActivity
+import com.heysoft.insulintracker.R
 
 class NotificationWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 

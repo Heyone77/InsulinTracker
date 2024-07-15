@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker.screens
+package com.heysoft.insulintracker.ui.screens
 
 import android.widget.DatePicker
 import androidx.compose.foundation.border
@@ -51,15 +51,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.DialogProperties
-import com.heysoft.insulintracker.MealEntry
-import com.heysoft.insulintracker.SharedViewModel
-import com.heysoft.insulintracker.calculateUk
-import com.heysoft.insulintracker.dateToUnix
-import com.heysoft.insulintracker.getCurrentDate
-import com.heysoft.insulintracker.intToMealTime
-import com.heysoft.insulintracker.mealTimeToInt
-import com.heysoft.insulintracker.toDoubleOrNullWithCommaSupport
-import com.heysoft.insulintracker.unixToDate
+import com.heysoft.insulintracker.data.db.MealEntry
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
+import com.heysoft.insulintracker.utils.calculateUk
+import com.heysoft.insulintracker.utils.dateToUnix
+import com.heysoft.insulintracker.utils.getCurrentDate
+import com.heysoft.insulintracker.utils.intToMealTime
+import com.heysoft.insulintracker.utils.mealTimeToInt
+import com.heysoft.insulintracker.utils.toDoubleOrNullWithCommaSupport
+import com.heysoft.insulintracker.utils.unixToDate
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

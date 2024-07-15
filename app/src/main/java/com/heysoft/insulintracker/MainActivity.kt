@@ -15,7 +15,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.heysoft.insulintracker.ui.screens.MainScreen
 import com.heysoft.insulintracker.ui.theme.InsulinTrackerTheme
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
+import com.heysoft.insulintracker.workers.NotificationWorker
 
 
 class MainActivity : ComponentActivity() {
@@ -24,9 +27,9 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-
+            TODO()
         } else {
-
+            TODO()
         }
     }
 

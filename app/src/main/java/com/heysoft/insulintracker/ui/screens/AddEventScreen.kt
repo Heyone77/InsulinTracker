@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker.screens
+package com.heysoft.insulintracker.ui.screens
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.heysoft.insulintracker.Event
-import com.heysoft.insulintracker.SharedViewModel
+import com.heysoft.insulintracker.data.db.Event
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -175,7 +175,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
                     onClick = { datePickerDialog.show() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = date.ifEmpty { "Выберите дату" })
+                    Text(text = date.ifEmpty { "Выберите дату" }, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                 }
                 if (showDateError) {
                     Text(text = "Дата обязательна", color = Color.Red, fontSize = 12.sp)
@@ -185,7 +185,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
                     onClick = { timePickerDialog.show() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = time.ifEmpty { "Выберите время" })
+                    Text(text = time.ifEmpty { "Выберите время" }, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                 }
                 if (showTimeError) {
                     Text(text = "Время обязательно", color = Color.Red, fontSize = 12.sp)

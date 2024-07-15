@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.utils
 
 import android.util.Log
 import java.text.SimpleDateFormat

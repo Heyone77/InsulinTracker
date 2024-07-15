@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.data.db
 
 import androidx.room.TypeConverter
 import java.util.Date

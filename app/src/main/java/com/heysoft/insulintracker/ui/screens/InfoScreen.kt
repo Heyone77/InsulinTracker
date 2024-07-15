@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker.screens
+package com.heysoft.insulintracker.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.heysoft.insulintracker.getInfoTextForScreen
+import com.heysoft.insulintracker.utils.getInfoTextForScreen
 
 @Composable
 fun ScreenInfoDialog(

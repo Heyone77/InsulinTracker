@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.ui.theme
 
 import android.content.Context
 import android.content.SharedPreferences

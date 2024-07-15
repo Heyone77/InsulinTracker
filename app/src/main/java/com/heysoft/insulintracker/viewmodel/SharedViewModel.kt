@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.viewmodel
 
 import android.app.Application
 import android.content.Context
@@ -11,6 +11,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.heysoft.insulintracker.data.db.Event
+import com.heysoft.insulintracker.data.db.EventDao
+import com.heysoft.insulintracker.data.db.MealDatabase
+import com.heysoft.insulintracker.data.db.MealEntry
+import com.heysoft.insulintracker.data.db.MealEntryDao
+import com.heysoft.insulintracker.ui.theme.ThemePreferences
+import com.heysoft.insulintracker.workers.NotificationWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

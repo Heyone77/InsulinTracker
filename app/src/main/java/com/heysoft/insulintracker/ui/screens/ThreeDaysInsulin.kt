@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker.screens
+package com.heysoft.insulintracker.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.heysoft.insulintracker.SharedViewModel
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
 import java.util.Locale
 
 @Composable

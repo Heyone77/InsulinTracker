@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.workers
 
 import android.app.Application
 import android.content.BroadcastReceiver
@@ -7,6 +7,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -16,7 +17,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 val sharedViewModel: SharedViewModel = ViewModelProvider(
                     ViewModelStore(),
                     ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
-                ).get(SharedViewModel::class.java)
+                )[SharedViewModel::class.java]
 
                 sharedViewModel.deleteEvent(eventId)
 

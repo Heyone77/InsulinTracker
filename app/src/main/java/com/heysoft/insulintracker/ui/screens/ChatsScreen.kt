@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker.screens
+package com.heysoft.insulintracker.ui.screens
 
 import android.content.Intent
 import android.net.Uri

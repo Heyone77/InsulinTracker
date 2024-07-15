@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.ui.screens
 
 import RecountCarbsCountScreen
 import androidx.compose.foundation.layout.padding
@@ -28,13 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.heysoft.insulintracker.screens.AboutScreen
-import com.heysoft.insulintracker.screens.CarbsCountScreen
-import com.heysoft.insulintracker.screens.ChatsScreen
-import com.heysoft.insulintracker.screens.EventListScreen
-import com.heysoft.insulintracker.screens.ScreenInfoDialog
-import com.heysoft.insulintracker.screens.SettingsScreen
-import com.heysoft.insulintracker.screens.ThreeDaysInsulinScreen
+import com.heysoft.insulintracker.DrawerContent
+import com.heysoft.insulintracker.viewmodel.SharedViewModel
+import com.heysoft.insulintracker.UserAgreementScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

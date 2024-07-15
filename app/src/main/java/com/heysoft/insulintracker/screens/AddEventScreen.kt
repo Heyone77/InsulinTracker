@@ -51,7 +51,7 @@ import java.util.Locale
 
 @Composable
 fun EventListScreen(modifier: Modifier = Modifier, sharedViewModel: SharedViewModel = viewModel()) {
-    val context = LocalContext.current
+    LocalContext.current
     val events by sharedViewModel.allEvents.collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
 
@@ -175,7 +175,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
                     onClick = { datePickerDialog.show() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = if (date.isEmpty()) "Выберите дату" else date)
+                    Text(text = date.ifEmpty { "Выберите дату" })
                 }
                 if (showDateError) {
                     Text(text = "Дата обязательна", color = Color.Red, fontSize = 12.sp)
@@ -185,7 +185,7 @@ fun EventDialog(onDismiss: () -> Unit, onSave: (Event) -> Unit) {
                     onClick = { timePickerDialog.show() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = if (time.isEmpty()) "Выберите время" else time)
+                    Text(text = time.ifEmpty { "Выберите время" })
                 }
                 if (showTimeError) {
                     Text(text = "Время обязательно", color = Color.Red, fontSize = 12.sp)

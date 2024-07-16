@@ -3,6 +3,7 @@ package com.heysoft.insulintracker.ui.theme
 import MyTypography
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -27,7 +28,6 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = Color.DarkGray,
     onBackground = Color.White,
     onSurface = Color.White
-
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -49,15 +49,29 @@ fun InsulinTrackerTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    Log.d("InsulinTrackerTheme", "Applying theme: ${if (darkTheme) "Dark" else "Light"}")
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) {
+                Log.d("InsulinTrackerTheme", "Using dynamic dark color scheme")
+                dynamicDarkColorScheme(context)
+            } else {
+                Log.d("InsulinTrackerTheme", "Using dynamic light color scheme")
+                dynamicLightColorScheme(context)
+            }
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+            Log.d("InsulinTrackerTheme", "Using static dark color scheme")
+            DarkColorScheme
+        }
+        else -> {
+            Log.d("InsulinTrackerTheme", "Using static light color scheme")
+            LightColorScheme
+        }
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

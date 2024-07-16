@@ -31,7 +31,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
     }
 
     private fun showNotification(title: String, description: String, eventId: Int) {
-        val notificationId = System.currentTimeMillis().toInt()
+        val notificationId = eventId
         val channelId = "event_channel"
 
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
@@ -44,14 +44,13 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             PendingIntent.FLAG_IMMUTABLE
         )
 
-
         val deleteIntent = Intent(applicationContext, NotificationReceiver::class.java).apply {
             action = "DELETE_EVENT"
             putExtra("eventId", eventId)
         }
         val deletePendingIntent: PendingIntent = PendingIntent.getBroadcast(
             applicationContext,
-            0,
+            eventId,
             deleteIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -63,7 +62,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .addAction(R.drawable.ic_notification, "Удалить", deletePendingIntent)  // Добавляем кнопку действия
+            .addAction(R.drawable.ic_notification, "Удалить", deletePendingIntent)
 
         if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             with(NotificationManagerCompat.from(applicationContext)) {

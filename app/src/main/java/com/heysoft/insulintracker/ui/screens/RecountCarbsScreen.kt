@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.DecimalFormat
-
 
 @Composable
 fun RecountCarbsCountScreen() {
@@ -90,7 +88,7 @@ fun RecountCarbsCountScreen() {
                 val planValue = plan.toDoubleOrNull()
 
                 if (stalValue != null && bylValue != null && planValue != null) {
-                    pereraschetUK = formatResult(RecountUK(stalValue, bylValue, planValue))
+                    pereraschetUK = formatResult(recountUK(stalValue, bylValue, planValue))
                     sredniyUK = formatResult(calculateAverageUK(stalValue, bylValue, planValue))
                 } else {
                     pereraschetUK = "Invalid input"
@@ -127,12 +125,12 @@ fun RecountCarbsCountScreen() {
     }
 }
 
-fun RecountUK(stal: Double, byl: Double, plan: Double): Double {
+fun recountUK(stal: Double, byl: Double, plan: Double): Double {
     return stal / byl * plan
 }
 
 fun calculateAverageUK(stal: Double, byl: Double, plan: Double): Double {
-    val pereraschet = RecountUK(stal, byl, plan)
+    val pereraschet = recountUK(stal, byl, plan)
     return (pereraschet + plan) / 2
 }
 

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,17 +26,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heysoft.insulintracker.DrawerContent
+import com.heysoft.insulintracker.ui.screens.CarbsCountScreen.CarbsCountScreen
+import com.heysoft.insulintracker.ui.screens.EventListScreen.EventListScreen
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
-import com.heysoft.insulintracker.UserAgreementScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(sharedViewModel: SharedViewModel) {
+fun MainScreen() {
+    val sharedViewModel: SharedViewModel = hiltViewModel()
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -86,12 +90,12 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = if (sharedViewModel.isAgreementAccepted.value == true) "carbsCountScreen" else "userAgreementScreen",
+                    startDestination = if (sharedViewModel.isAgreementAccepted.collectAsState().value) "carbsCountScreen" else "userAgreementScreen",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("carbsCountScreen") {
                         currentScreen = screenTitleMap["carbsCountScreen"] ?: "Расчёт УК"
-                        CarbsCountScreen(sharedViewModel = sharedViewModel)
+                        CarbsCountScreen()
                     }
                     composable("recountCarbsCountScreen") {
                         currentScreen = screenTitleMap["recountCarbsCountScreen"] ?: "Перерасчет УК"
@@ -99,7 +103,7 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
                     }
                     composable("threeDaysInsulin") {
                         currentScreen = screenTitleMap["threeDaysInsulin"] ?: "ФЧИ"
-                        ThreeDaysInsulinScreen(sharedViewModel = sharedViewModel)
+                        ThreeDaysInsulinScreen()
                     }
                     composable("aboutScreen") {
                         currentScreen = screenTitleMap["aboutScreen"] ?: "О приложении"
@@ -107,19 +111,19 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
                     }
                     composable("settingsScreen") {
                         currentScreen = screenTitleMap["settingsScreen"] ?: "Настройки"
-                        SettingsScreen(sharedViewModel)
+                        SettingsScreen()
                     }
                     composable("addEventScreen") {
                         currentScreen = screenTitleMap["addEventScreen"] ?: "Добавить событие"
                         EventListScreen()
                     }
-                    composable("chatScreen") {  // Новый экран
+                    composable("chatScreen") {
                         currentScreen = screenTitleMap["chatScreen"] ?: "Чаты и каналы с полезной информацией"
                         ChatsScreen()
                     }
                     composable("userAgreementScreen") {
                         currentScreen = screenTitleMap["userAgreementScreen"] ?: "Пользовательское соглашение"
-                        UserAgreementScreen(sharedViewModel, navController) {
+                        UserAgreementScreen(navController = navController) {
                             navController.navigate("carbsCountScreen") {
                                 popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
@@ -138,5 +142,3 @@ fun MainScreen(sharedViewModel: SharedViewModel) {
         }
     )
 }
-
-

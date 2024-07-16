@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.ui.screens
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
@@ -20,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.heysoft.insulintracker.R
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
 
 @Composable
 fun UserAgreementScreen(
-    sharedViewModel: SharedViewModel = viewModel(),
+    sharedViewModel: SharedViewModel = hiltViewModel(),
     navController: NavHostController,
     onAgreementAccepted: () -> Unit
 ) {

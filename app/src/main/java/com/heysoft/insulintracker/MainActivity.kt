@@ -4,32 +4,34 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.heysoft.insulintracker.ui.screens.MainScreen
 import com.heysoft.insulintracker.ui.theme.InsulinTrackerTheme
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
 import com.heysoft.insulintracker.workers.NotificationWorker
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            TODO()
+            // Permission granted
         } else {
-            TODO()
+            // Permission denied
         }
     }
 
@@ -48,8 +50,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val sharedViewModel: SharedViewModel = viewModel()
-            val isDarkTheme by sharedViewModel.isDarkTheme.observeAsState(false)
+            val sharedViewModel: SharedViewModel = hiltViewModel()
+            val isDarkTheme by sharedViewModel.isDarkTheme.collectAsState()
+
+            Log.d("MainActivity", "isDarkTheme: $isDarkTheme")
 
             InsulinTrackerTheme(
                 darkTheme = isDarkTheme
@@ -58,7 +62,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(sharedViewModel = sharedViewModel)
+                    MainScreen()
                 }
             }
         }

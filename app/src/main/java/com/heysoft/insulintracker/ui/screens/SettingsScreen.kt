@@ -23,8 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
 
 @Composable
-fun SettingsScreen() {
-    val sharedViewModel: SharedViewModel = hiltViewModel()
+fun SettingsScreen(sharedViewModel: SharedViewModel = hiltViewModel()) {
     val isDarkTheme by sharedViewModel.isDarkTheme.collectAsState()
 
     Log.d("SettingsScreen", "SettingsScreen: isDarkTheme = $isDarkTheme")
@@ -41,10 +40,12 @@ fun SettingsScreen() {
         ) {
             Text(text = "Темная тема", fontSize = 18.sp)
             Switch(
-                checked = isDarkTheme, onCheckedChange = { newTheme ->
+                checked = isDarkTheme,
+                onCheckedChange = { newTheme ->
                     Log.d("SettingsScreen", "Switch clicked: newTheme = $newTheme")
                     sharedViewModel.setDarkTheme(newTheme)
-                }, colors = SwitchDefaults.colors(
+                },
+                colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,
                     uncheckedThumbColor = Color.LightGray
                 )

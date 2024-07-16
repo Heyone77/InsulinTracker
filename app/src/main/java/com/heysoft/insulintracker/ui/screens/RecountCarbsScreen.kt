@@ -105,14 +105,16 @@ fun RecountCarbsCountScreen() {
         pereraschetUK?.let {
             Text(
                 text = "Перерасчет УК: $it",
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                textAlign = TextAlign.Justify
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         sredniyUK?.let {
             Text(
                 text = "Средний УК: $it",
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                textAlign = TextAlign.Justify
             )
         }
         Spacer(modifier = Modifier.height(12.dp))

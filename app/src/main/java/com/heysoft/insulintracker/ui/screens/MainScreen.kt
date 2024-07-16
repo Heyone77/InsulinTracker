@@ -38,8 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    val sharedViewModel: SharedViewModel = hiltViewModel()
+fun MainScreen(sharedViewModel: SharedViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -111,7 +110,7 @@ fun MainScreen() {
                     }
                     composable("settingsScreen") {
                         currentScreen = screenTitleMap["settingsScreen"] ?: "Настройки"
-                        SettingsScreen()
+                        SettingsScreen(sharedViewModel = sharedViewModel)
                     }
                     composable("addEventScreen") {
                         currentScreen = screenTitleMap["addEventScreen"] ?: "Добавить событие"

@@ -45,16 +45,16 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun InsulinTrackerTheme(
-    darkTheme: Boolean,
+    isDarkTheme: Boolean,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    Log.d("InsulinTrackerTheme", "Applying theme: ${if (darkTheme) "Dark" else "Light"}")
+    Log.d("InsulinTrackerTheme", "Applying theme: ${if (isDarkTheme) "Dark" else "Light"}")
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) {
+            if (isDarkTheme) {
                 Log.d("InsulinTrackerTheme", "Using dynamic dark color scheme")
                 dynamicDarkColorScheme(context)
             } else {
@@ -62,7 +62,7 @@ fun InsulinTrackerTheme(
                 dynamicLightColorScheme(context)
             }
         }
-        darkTheme -> {
+        isDarkTheme -> {
             Log.d("InsulinTrackerTheme", "Using static dark color scheme")
             DarkColorScheme
         }
@@ -77,7 +77,7 @@ fun InsulinTrackerTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isDarkTheme
         }
     }
 

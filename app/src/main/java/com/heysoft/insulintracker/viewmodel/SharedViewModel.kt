@@ -46,7 +46,7 @@ class SharedViewModel @Inject constructor(
         Log.d("SharedViewModel", "setDarkTheme: Theme set in preferences")
     }
 
-    // Остальной код
+
     val fchiValue = MutableStateFlow(0.0)
     val mealEntries = MutableStateFlow(emptyList<MealEntry>())
     val isAgreementAccepted =

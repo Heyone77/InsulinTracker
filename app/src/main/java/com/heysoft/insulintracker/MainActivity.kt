@@ -29,9 +29,9 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permission granted
+            TODO()
         } else {
-            // Permission denied
+            TODO()
         }
     }
 
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
             Log.d("MainActivity", "isDarkTheme: $isDarkTheme")
 
             InsulinTrackerTheme(
-                darkTheme = isDarkTheme
+                isDarkTheme = isDarkTheme
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

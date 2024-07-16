@@ -21,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
 import java.util.Locale
 
 @Composable
-fun ThreeDaysInsulinScreen(sharedViewModel: SharedViewModel) {
+fun ThreeDaysInsulinScreen() {
+    val sharedViewModel: SharedViewModel = hiltViewModel()
     var input by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<String?>(null) }
 

@@ -1,7 +1,6 @@
 package com.heysoft.insulintracker.data.db
 
 
-import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
@@ -9,7 +8,6 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.Update
@@ -26,7 +24,6 @@ data class Event(
     val workId: String? = null
 )
 
-
 @Entity(tableName = "meal_entry")
 data class MealEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -39,7 +36,6 @@ data class MealEntry(
     val carbs: Double,
     val uk: Double
 )
-
 
 @Dao
 interface MealEntryDao {
@@ -77,7 +73,6 @@ interface EventDao {
     suspend fun updateEventWorkId(eventId: Int, workId: String?)
 }
 
-
 @Database(entities = [MealEntry::class, Event::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class MealDatabase : RoomDatabase() {
@@ -85,25 +80,7 @@ abstract class MealDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: MealDatabase? = null
-
-        fun getDatabase(context: Context): MealDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    MealDatabase::class.java,
-                    "meal_database"
-                )
-                    .addMigrations(MIGRATION_4_5)
-                    .fallbackToDestructiveMigration()
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-
-        private val MIGRATION_4_5 = object : Migration(4, 5) {
+        val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE events ADD COLUMN workId TEXT")
             }

@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.heysoft.insulintracker.R
 
 @Composable
 fun AboutScreen() {
@@ -28,39 +30,28 @@ fun AboutScreen() {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            Text(
-                text = "Данное приложение разработано для помощи в расчетах Углеводных коэффициентов в целях расчета доз болюсов. Все исходные данные, необходимые для расчета вносятся исключительно пользователем, что в итоге влияет на конечный результат. Программа не вмешивается во вносимые пользователем исходные сведения, в следствии чего, за все итоговые расчеты при помощи данного приложения ответственность несет исключительно пользователь.",
-                fontSize = 19.sp,
-                lineHeight = 28.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
-                textAlign = TextAlign.Justify
-            )
-            Text(
-                text = "Все полученные данные по результатам расчетов/перерасчетов Углеводных коэффициентов должны применяться на практике исходя из текущего состояния пользователя, а также его текущей потребности в дозировках болюса.",
-                fontSize = 19.sp,
-                lineHeight = 28.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
-                textAlign = TextAlign.Justify
-            )
-            Text(
-                text = "В случае возникновения спорных ситуаций по результатам расчетов программы, необходимо незамедлительно совершить перерасчет дозировки любым из известных вам способов вне приложения, для проверки корректности работы приложения, либо исправления внесенных пользователем исходных данных.",
-                fontSize = 19.sp,
-                lineHeight = 28.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
-                textAlign = TextAlign.Justify
-            )
-            Text(
-                text = "Проверка адекватности Углеводных коэффициентов для расчета доз болюсов проводится при условиях:\n" +
-                        "- близкого к целевым исходного показателя гликемии;\n" +
-                        "- приема стандартного количества пищи, количество углеводов в которой легко просчитать;\n" +
-                        "- обычной физической активности в течение 4 часов после еды;\n" +
-                        "- отсутствие воспалительных заболеваний/стресса;\n" +
-                        "- не в первые 4-6 часов после перенесенной гипогликемии.",
-                fontSize = 19.sp,
-                lineHeight = 28.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
-                textAlign = TextAlign.Justify
+            AboutText(text = stringResource(R.string.about_text_1))
+            AboutText(text = stringResource(R.string.about_text_2))
+            AboutText(text = stringResource(R.string.about_text_3))
+            AboutText(
+                text = stringResource(R.string.about_text_4) +
+                        stringResource(R.string.about_text_5) +
+                        stringResource(R.string.about_text_6) +
+                        stringResource(R.string.about_text_7) +
+                        stringResource(R.string.about_text_8) +
+                        stringResource(R.string.about_text_9)
             )
         }
     }
+}
+
+@Composable
+fun AboutText(text: String) {
+    Text(
+        text = text,
+        fontSize = 19.sp,
+        lineHeight = 28.sp,
+        modifier = Modifier.padding(bottom = 16.dp),
+        textAlign = TextAlign.Justify
+    )
 }

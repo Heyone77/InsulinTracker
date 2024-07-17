@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -8,15 +5,6 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
-
-val localProperties = Properties().apply {
-    val localPropertiesFile = rootProject.file("local.properties")
-    if (localPropertiesFile.exists()) {
-        load(FileInputStream(localPropertiesFile))
-    }
-}
-val apiKey = localProperties.getProperty("APIKEY") ?: "default_value"
-
 
 
 android {
@@ -30,7 +18,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "APIKEY", "\"$apiKey\"")
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

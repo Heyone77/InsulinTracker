@@ -16,22 +16,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.heysoft.insulintracker.network.ApiService
 import com.heysoft.insulintracker.ui.screens.MainScreen
 import com.heysoft.insulintracker.ui.theme.InsulinTrackerTheme
+import com.heysoft.insulintracker.utils.addUser
+import com.heysoft.insulintracker.utils.getDeviceUUID
 import com.heysoft.insulintracker.viewmodel.SharedViewModel
 import com.heysoft.insulintracker.workers.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var apiService: ApiService
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            TODO()
+            // Do something when the permission is granted
         } else {
-            TODO()
+            // Do something when the permission is denied
         }
     }
 
@@ -66,5 +73,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        val deviceUUID = getDeviceUUID(this)
+        Log.e("MainActivity", "ID: $deviceUUID")
+        addUser(apiService, deviceUUID)
     }
 }

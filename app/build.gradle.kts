@@ -6,7 +6,6 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
-
 android {
     namespace = "com.heysoft.insulintracker"
     compileSdk = 34
@@ -18,24 +17,13 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
-
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
-        }
-    }
+
 
     signingConfigs {
         create("release") {
@@ -46,10 +34,18 @@ android {
         }
     }
 
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+    }
+
     buildFeatures {
         compose = true
-        buildConfig = true
-
     }
 
     composeOptions {
@@ -70,6 +66,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
 
 dependencies {

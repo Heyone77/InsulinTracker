@@ -1,6 +1,5 @@
 package com.heysoft.insulintracker.di
 
-import com.heysoft.insulintracker.BuildConfig
 import com.heysoft.insulintracker.network.ApiService
 import dagger.Module
 import dagger.Provides
@@ -17,7 +16,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "http://109.195.139.151:30001/add/"
-    val apiKey = BuildConfig.APIKEY
+    val apiKey = System.getenv("APIKEY") ?: "default_value"
 
     @Provides
     @Singleton

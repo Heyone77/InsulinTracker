@@ -29,8 +29,8 @@ android {
         versionName = "1.2"
 
 
-        val apiKey: String = System.getenv("API_KEY") ?: localProperties.getProperty("APIKEY") ?: "default_value"
-        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        val apiKey: String = System.getenv("APIKEY") ?: localProperties.getProperty("APIKEY") ?: "default_value"
+        buildConfigField("String", "APIKEY", "\"$apiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.heysoft.insulintracker.NavigationDrawerItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

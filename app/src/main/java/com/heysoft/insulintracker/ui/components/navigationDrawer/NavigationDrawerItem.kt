@@ -1,4 +1,4 @@
-package com.heysoft.insulintracker
+package com.heysoft.insulintracker.ui.components.navigationDrawer
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

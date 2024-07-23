@@ -25,6 +25,12 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
 
+      - name: Extract version from build.gradle.kts
+        id: extract_version
+        run: |
+          VERSION_NAME=$(grep -oP '(?<=versionName = ")[^"]*' app/build.gradle.kts)
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+
       - name: Build with Gradle
         run: ./gradlew assembleRelease -x test -x lint
         env:
@@ -45,8 +51,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.sha }}
-          release_name: Release
+          tag_name: v${{ env.VERSION_NAME }}
+          release_name: Release v${{ env.VERSION_NAME }}
           draft: false
           prerelease: false
 

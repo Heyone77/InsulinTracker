@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.heysoft.insulintracker.DrawerContent
+import com.heysoft.insulintracker.ui.components.navigationDrawer.DrawerContent
 import com.heysoft.insulintracker.ui.screens.CarbsCountScreen.CarbsCountScreen
 import com.heysoft.insulintracker.ui.screens.EventListScreen.EventListScreen
 import com.heysoft.insulintracker.viewmodel.SharedViewModel

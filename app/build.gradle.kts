@@ -17,8 +17,6 @@ val localProperties = Properties().apply {
 }
 val apiKey = localProperties.getProperty("APIKEY") ?: "default_value"
 
-
-
 android {
     namespace = "com.heysoft.insulintracker"
     compileSdk = 34
@@ -28,17 +26,16 @@ android {
         minSdk = 28
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.2"
 
-        buildConfigField("String", "APIKEY", "\"$apiKey\"")
-
+        // Чтение переменной окружения API_KEY
+        val apiKey: String = System.getenv("API_KEY") ?: localProperties.getProperty("APIKEY") ?: "default_value"
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
-
     }
 
     buildTypes {
@@ -62,7 +59,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-
     }
 
     composeOptions {

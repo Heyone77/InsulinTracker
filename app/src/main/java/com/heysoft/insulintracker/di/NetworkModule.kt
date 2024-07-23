@@ -17,7 +17,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "http://109.195.139.151:30001/add/"
-    val apiKey = BuildConfig.APIKEY
+    private val apiKey = BuildConfig.API_KEY
 
     @Provides
     @Singleton

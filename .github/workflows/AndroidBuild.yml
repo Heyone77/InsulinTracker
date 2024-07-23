@@ -25,18 +25,28 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
 
+      - name: Extract version from build.gradle.kts
+        id: extract_version
+        run: |
+          VERSION_NAME=$(grep -oP '(?<=versionName = ")[^"]*' app/build.gradle.kts)
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+
       - name: Build with Gradle
-        run: ./gradlew assembleRelease -x test -x lint
+        run: |
+          ./gradlew assembleRelease -x test -x lint
+          echo "APK_PATH=$(find $(pwd) -name 'app-release.apk')" >> $GITHUB_ENV
+          echo "APK_PATH: $(find $(pwd) -name 'app-release.apk')"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          APIKEY: ${{ secrets.APIKEY }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.3
         with:
           name: DiaHelper.apk
-          path: app/build/outputs/apk/release/app-release.apk
+          path: ${{ env.APK_PATH }}
 
       - name: Create GitHub Release
         id: create_release
@@ -44,8 +54,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.sha }}
-          release_name: Release
+          tag_name: ${{ env.VERSION_NAME }}
+          release_name: Release ${{ env.VERSION_NAME }}
           draft: false
           prerelease: false
 
@@ -58,6 +68,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: app/build/outputs/apk/release/app-release.apk
+          asset_path: ${{ env.APK_PATH }}
           asset_name: DiaHelper.apk
           asset_content_type: application/vnd.android.package-archive

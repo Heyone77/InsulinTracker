@@ -28,7 +28,7 @@ android {
         versionCode = 1
         versionName = "1.2"
 
-        // Чтение переменной окружения API_KEY
+
         val apiKey: String = System.getenv("API_KEY") ?: localProperties.getProperty("APIKEY") ?: "default_value"
         buildConfigField("String", "API_KEY", "\"$apiKey\"")
 
@@ -38,14 +38,6 @@ android {
         }
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
-        }
-    }
 
     signingConfigs {
         create("release") {
@@ -53,6 +45,16 @@ android {
             keyPassword = System.getenv("KEY_PASSWORD") ?: ""
             storeFile = file("keystore.jks")
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
         }
     }
 
@@ -79,6 +81,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
 
 dependencies {
